@@ -65,7 +65,7 @@ Requirements for ArgoCD:
 --------------------
 
 'kubectl create namespace argocd'
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+'kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml'
 
 .The installation manifests include ClusterRoleBinding resources that reference argocd Namespace.
 If you are installing Argo CD into a different namespace then make sure to update the namespace
@@ -82,9 +82,9 @@ https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/
 
 b.Configure the client OS to trust the self signed certificate.
 
-c.Use the --insecure flag on all Argo CD CLI operations in this guide.
+c.Use the '--insecure' flag on all Argo CD CLI operations in this guide.
 
-.Use argocd login --core to configure CLI access and skip steps 3-5.
+d.Use argocd login --core to configure CLI access and skip steps 3-5.
 
 
 2. Download Argo CD CLI
