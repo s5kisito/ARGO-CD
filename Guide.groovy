@@ -161,8 +161,8 @@ Login with the argocd CLI:
 "argocd login <host>"
 
 ** Option 2: Mapping CRD for Path-based Routing¶
-The API server must be configured to be available under a non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
 
+The API server must be configured to be available under a non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
 
 apiVersion: getambassador.io/v2
 kind: Mapping
