@@ -488,7 +488,7 @@ b.Syncing via UI (TBD)
 
 
 
-IV.Tls Configuration
+V.Tls Configuration
 -------------------
 
 Argo CD provides three inbound Tls edgendpoints that can be configured:
