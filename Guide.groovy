@@ -454,3 +454,36 @@ manifests. The guestbook app is now running and you can now view its resource co
 events, and assessed health status.
 
 b.Syncing via UI
+
+
+IV. High Availability.
+
+Argo CD is largely stateless. All data is persisted as Kubernetes objects, which in turn is stored 
+in Kubernetes etcd. Redis is only used as a throw-away cache and can be lost. When lost, 
+it will be rebuilt without loss of service.
+
+A set of HA manifests are provided for users who wish to run Argo CD in a highly available manner.
+ This runs more containers, and runs Redis in HA mode.
+
+NOTE: The HA installation will require at least Three(3) Different Nodes due to Pod Anti-Affinity roles in 
+the specs. Additionally, IPv6 only clusters are not supported.
+
+argocd-repo-server is like a librarian for your application blueprints (stored in Git repositories). 
+It fetches these blueprints, makes sure they are up to date, 
+and serves them to Argo CD so it can deploy and manage your applications correctly on Kubernetes. 
+This server plays a crucial role in ensuring that the applications you deploy are based on the latest 
+configurations stored in your Git repositories, 
+allowing for efficient and reliable application management at scale.
+
+
+In Argo CD, the argocd-application-controller is like the traffic cop that oversees how your applications 
+are managed and updated on Kubernetes.
+
+Imagine you have several applications running on Kubernetes. Each application has its own configuration 
+stored in Git. The argocd-application-controller checks these configurations regularly to see 
+if any updates or changes are needed. If it finds something new or different in the Git repository, 
+it makes sure that the application on Kubernetes gets updated accordingly.
+
+So, it is like a vigilant supervisor that ensures your applications on Kubernetes always match the latest 
+settings you have defined in Git. This helps keep your applications running smoothly and consistently, 
+even as you make changes or improvements over time.
