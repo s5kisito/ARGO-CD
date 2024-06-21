@@ -710,4 +710,46 @@ data:
 
     g, your-github-org:your-team, role:org-admin
 
+To validate a policy stored in a local text file:
+argocd admin settings rbac validate --policy-file somepolicy.csv
 
+To validate a policy stored in a local K8s ConfigMap definition in a YAML file:
+argocd admin settings rbac validate --policy-file argocd-rbac-cm.yaml
+
+To validate a policy stored in K8s, used by Argo CD in namespace argocd, ensure that your current context in ~/.kube/config is pointing to your Argo CD cluster and give appropriate namespace:
+argocd admin settings rbac validate --namespace argocd
+
+Testing a policy¶
+To test whether a role or subject (group or local user) has sufficient permissions to execute certain actions on certain resources, you can use the argocd admin settings rbac can command. Its general syntax is
+argocd admin settings rbac can SOMEROLE ACTION RESOURCE SUBRESOURCE [flags]
+Given the example from the above ConfigMap, which defines the role role:org-admin, and is stored on your local system as argocd-rbac-cm-yaml, you can test whether that role can do something like follows:
+
+
+$ argocd admin settings rbac can role:org-admin get applications --policy-file argocd-rbac-cm.yaml
+Yes
+
+$ argocd admin settings rbac can role:org-admin get clusters --policy-file argocd-rbac-cm.yaml
+Yes
+
+$ argocd admin settings rbac can role:org-admin create clusters 'somecluster' --policy-file argocd-rbac-cm.yaml
+No
+
+$ argocd admin settings rbac can role:org-admin create applications 'someproj/someapp' --policy-file argocd-rbac-cm.yaml
+Yes
+Another example, given the policy above from policy.csv, which defines the role role:staging-db-admin and associates the group db-admins with it. Policy is stored locally as policy.csv:
+
+You can test against the role:
+$ # Plain policy, without a default role defined
+$ argocd admin settings rbac can role:staging-db-admin get applications --policy-file policy.csv
+No
+
+$ argocd admin settings rbac can role:staging-db-admin get applications 'staging-db-project/*' --policy-file policy.csv
+Yes
+
+$ # Argo CD augments a builtin policy with two roles defined, the default role
+$ # being 'role:readonly' - You can include a named default role to use:
+$ argocd admin settings rbac can role:staging-db-admin get applications --policy-file policy.csv --default-role role:readonly
+Yes
+Or against the group defined:
+$ argocd admin settings rbac can db-admins get applications 'staging-db-project/*' --policy-file policy.csv
+Yes
