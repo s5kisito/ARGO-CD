@@ -48,8 +48,37 @@ by applying changes to a Kubernetes cluster.
 .Configuration management plugin A custom tool.
 
 
+III. ArgoCD-Architecture
+------------------------
 
-III. Steps for Getting started :
+1. An Api Server is a gRPC/REST server that provides an interface for the Web Ui, 
+Command line tools, and CI/CD systems to interact with an application. 
+
+It performs the following tasks:
+
+.Manages Applications and reports their status
+.Executes operations like synchronization, rollback, and user-defined actions
+.Manages Repository and Cluster Credentials, storing them as Kubernetes Secrets
+.Handles authentication and delegates authorization to external identity providers
+.Enforces role-based access control (RBAC)
+.Listens to and processes Git webhook events.
+
+2. A repository server is an internal service that keeps a local copy of the 
+Git repository containing application manifests. It generates and returns Kubernetes manifests 
+based on the following inputs:
+
+.Repository URL
+.Revision (commit, tag, branch)
+.Application path
+.Template-specific settings: parameters and Helm values.yaml
+
+3. An Application Controller is a Kubernetes Controller that Continuously Monitors
+Running Applications, comparing their Current State to the Desired State specified in the 
+repository. It identifies when applications are out of sync and can optionally 
+take corrective action. It also invokes user-defined hooks for lifecycle events,
+such as PreSync, Sync, and PostSync.
+
+IV. Steps for Getting started 
 --------------------------------
 --------------------------------
 
@@ -64,13 +93,13 @@ Requirements for ArgoCD:
 1 . Install ArgoCD:
 --------------------
 
-'kubectl create namespace argocd'
-'kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml'
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 .The installation manifests include ClusterRoleBinding resources that reference argocd Namespace.
 If you are installing Argo CD into a different namespace then make sure to update the namespace
 reference.
-.Default namespace for kubectl config must be set to "argocd". This is only needed for the 
+.Default namespace for kubectl config must be set to argocd. This is only needed for the 
 following commands since the previous commands have -n argocd already:
 "kubectl config set-context --current --namespace=argocd"
 
@@ -82,7 +111,7 @@ https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/
 
 b.Configure the client OS to trust the self signed certificate.
 
-c.Use the '--insecure' flag on all Argo CD CLI operations in this guide.
+c.Use the --insecure flag on all Argo CD CLI operations in this guide.
 
 d.Use argocd login --core to configure CLI access and skip steps 3-5.
 
@@ -93,12 +122,12 @@ Download the latest Argo CD version from https://github.com/argoproj/argo-cd/rel
 
 Also available in Mac, Linux and WSL Homebrew:
 
-"brew install argocd"
+brew install argocd
 
-. Use [['argocd login --core']] to Configure Cli Access and skip steps 3-5. 
+. Use [[argocd login --core]] to Configure Cli Access and skip steps 3-5. 
 
 
-['PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5']
+[PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5]
 
 
 3. Access The Argo CD API Server
@@ -107,9 +136,9 @@ By default, the Argo CD API server is not exposed with an external IP. To access
 
 a.'Service Type Load Balancer'.
 Change the argocd-server service type to LoadBalancer:
-" kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}' "
+ kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
 
-b.'Ingress'.
+b.Ingress
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
 Argo CD API server runs both a gRPC server (used by the CLI), as well as a HTTP/HTTPS server (used by the UI). Both protocols are exposed by the argocd-server service object on the following ports:
@@ -122,16 +151,16 @@ There are several ways how Ingress can be configured:
 - Ambassador
 
 The Ambassador Edge Stack can be used as a Kubernetes Ingress Controller with automatic 
-TlS Termination and routing capabilities for both the 'CLI' and the 'UI'.
+TlS Termination and routing capabilities for both the CLI and the UI.
 
-The 'API server' should be run with 'TLS disabled'. Edit the argocd-server deployment to add 
-the "--insecure" flag to the argocd-server command, or simply set server.insecure: "true" 
+The API server should be run with TLS disabled. Edit the argocd-server deployment to add 
+the --insecure flag to the argocd-server command, or simply set server.insecure: "true" 
 in the argocd-cmd-params-cm ConfigMap as described here. 
 Given the argocd CLI includes the port number in the request host header, 
 2 Mappings are required.
 
 
-** Option 1: Mapping CRD for 'Host-based Routing¶'
+** Option 1: Mapping CRD for Host-based Routing¶
 
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -161,8 +190,8 @@ Login with the argocd CLI:
 "argocd login <host>"
 
 ** Option 2: Mapping CRD for Path-based Routing¶
-The API server must be configured to be available under a non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
 
+The API server must be configured to be available under a non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
 
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -181,7 +210,7 @@ Login with the argocd CLI using the extra --grpc-web-root-path flag for non-root
 - Contour
 
 The Contour ingress controller can terminate TLS ingress traffic at the edge.
-to add the "--insecure" flag to the argocd-server container command, or simply set server.
+to add the --insecure flag to the argocd-server container command, or simply set server.
 insecure: "true" in the argocd-cmd-params-cm ConfigMap as described here.
 It is also possible to provide an internal-only ingress path and an external-only ingress 
 path by deploying two instances of Contour: 
@@ -453,7 +482,33 @@ This command retrieves the manifests from the repository and performs a kubectl 
 manifests. The guestbook app is now running and you can now view its resource components, logs,
 events, and assessed health status.
 
-b.Syncing via UI
+b.Syncing via UI (TBD)
+
+
+
+
+
+V.Tls Configuration
+-------------------
+
+Argo CD provides three inbound Tls edgendpoints that can be configured:
+
+.The user-facing endpoint of the Argocd-Server workload which serves the UI and the API
+.The endpoint of the Argocd-Repo-Server, which is accessed by argocd-server and 
+argocd-application-controller workloads to request repository operations.
+.The endpoint of the Argocd-Dex-Server, which is accessed by argocd-server to handle 
+OIDC authentication.
+
+P.S : By Default Once ArgoCD is installed it comes with Self-Signed-Certificate 
+for the (3 endpoints) 
+
+To be able to manage it ourselves me need to supply our own Certificate-Manager, or 
+Certificate Authority, (for 3 endpoints).
+
+1 - Tls 
+
+
+
 
 
 IV. High Availability.
