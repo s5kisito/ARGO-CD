@@ -630,4 +630,84 @@ configurations of the argocd-application-controller, along with tips for optimiz
 performance and handling large-scale deployments.
 
 
+VI- User Management 
+------------------
+------------------
+
+1- Always note that the first user is the admin. Use the Admin User to create users and update password for the first time.
+
+2- Local users/accounts: here this option allows the devops engineer to create 2 types of less privileged users. There are 2 types: 
+Auth tokens: mainly a feature for automation(non-human users). The token is generated with limited privileges to create applications and projects.
+Local users: for other people within the company.
+
+To create users it is mandatory to use Configmap. Here is an example: 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  # add an additional local user with apiKey and login capabilities
+  #   apiKey - allows generating API keys
+  #   login - allows to login using UI
+  accounts.alice: apiKey, login
+  # disables user. User is enabled by default
+  accounts.alice.enabled: "false"
+
+To delete the user: kubectl patch -n argocd cm argocd-cm --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice"}]'
+It is important to delete his password in the secrets: kubectl patch -n argocd secrets argocd-secret --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice.password"}]'
+After creating the users, it is important to remove the admin user: 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  admin.enabled: "false"
+
+
+3- Important commands to manage  users: 
+
+Get full users list : “argocd account list”
+Get specific user details : “argocd account get --account <username>”
+Set user password: 
+# if you are managing users as the admin user, <current-user-password> should be the current admin password.
+argocd account update-password \
+  --account <name> \
+  --current-password <current-user-password> \
+  --new-password <new-user-password
+Generate auth token:
+# if flag --account is omitted then Argo CD generates token for current user
+argocd account generate-token --account <username>
+
+4- How to use Role Based Access Control[[(RBAC)]] to limit or define privileges within the users of argoCD.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.default: role:readonly
+  policy.csv: |
+    p, role:org-admin, applications, *, */*, allow
+    p, role:org-admin, clusters, get, *, allow
+    p, role:org-admin, repositories, get, *, allow
+    p, role:org-admin, repositories, create, *, allow
+    p, role:org-admin, repositories, update, *, allow
+    p, role:org-admin, repositories, delete, *, allow
+    p, role:org-admin, projects, get, *, allow
+    p, role:org-admin, projects, create, *, allow
+    p, role:org-admin, projects, update, *, allow
+    p, role:org-admin, projects, delete, *, allow
+    p, role:org-admin, logs, get, *, allow
+    p, role:org-admin, exec, create, */*, allow
+
+    g, your-github-org:your-team, role:org-admin
+
 
