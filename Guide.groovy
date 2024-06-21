@@ -488,7 +488,7 @@ b.Syncing via UI (TBD)
 
 
 
-V.Tls Configuration
+IV.Tls Configuration
 -------------------
 
 Argo CD provides three inbound Tls edgendpoints that can be configured:
@@ -511,7 +511,7 @@ Certificate Authority, (for 3 endpoints).
 
 
 
-IV. High Availability.
+V. High Availability.
 
 Argo CD is largely stateless. All data is persisted as Kubernetes objects, which in turn is stored 
 in Kubernetes etcd. Redis is only used as a throw-away cache and can be lost. When lost, 
@@ -542,3 +542,92 @@ it makes sure that the application on Kubernetes gets updated accordingly.
 So, it is like a vigilant supervisor that ensures your applications on Kubernetes always match the latest 
 settings you have defined in Git. This helps keep your applications running smoothly and consistently, 
 even as you make changes or improvements over time.
+
+
+1.Simplified Summary of Scaling Up Argocd-Repo-Server
+
+Purpose:
+
+The argocd-repo-server handles cloning Git repositories, updating them, 
+and generating manifests using tools like Kustomize, Helm, or custom plugins.
+Key Points:
+
+Concurrency Control:
+The --parallelismlimit flag limits the number of concurrent manifest generations 
+to prevent memory issues.
+
+Repository State:
+Keeps the repository in a clean state during manifest generation. 
+Multiple applications in a single repository can impact performance.
+
+Disk Space Management:
+Clones repositories into /tmp or a specified path. 
+To avoid running out of disk space, use a persistent volume.
+
+Handling Revisions:
+Uses git ls-remote to resolve ambiguous revisions frequently. 
+Use ARGOCD_GIT_ATTEMPTS_COUNT to retry failed requests.
+
+Manifest Cache:
+Checks for app manifest changes every 3 minutes by default. Caches manifests for 24 hours. 
+Reduce cache time with --repo-cache-expiration if necessary, but this may reduce caching 
+benefits.
+
+Execution Timeout:
+Executes tools with a 90-second timeout, adjustable with ARGOCD_EXEC_TIMEOUT.
+
+Metrics:
+argocd_git_request_total: Tracks the number of Git requests, tagged by repository URL and 
+request type.
+ARGOCD_ENABLE_GRPC_TIME_HISTOGRAM: Enables collecting RPC performance metrics, useful for 
+troubleshooting but resource-intensive.
+
+2. Simplified Summary of Argocd-Application-Controller
+
+Function:
+.Uses argocd-repo-server for generated manifests.
+.Uses Kubernetes API server for the actual cluster state.
+.Processing Queues:
+
+Application Reconciliation (milliseconds) and App Syncing (seconds).
+Controlled by --status-processors (default: 20) and --operation-processors (default: 10).
+For managing 1000 applications, use 50 for --status-processors
+and 25 for --operation-processors.
+
+Manifest Generation:
+Limited to prevent queue overflow.
+Increase --repo-server-timeout-seconds if reconciliations fail due to timeout.
+
+Kubernetes Watch APIs:
+Maintains a lightweight cluster cache for improved performance.
+Monitors only preferred versions of resources.
+Converts cached resources to the version in Git during reconciliation.
+Fallback to Kubernetes API query if conversion fails, which slows down reconciliation.
+
+Polling and Caching:
+Polls Git every 3 minutes (default).
+Adjustable via timeout.reconciliation and timeout.reconciliation.jitter in argocd-cm ConfigMap.
+Default cluster information update every 10 seconds.
+Adjust ARGO_CD_UPDATE_CLUSTER_INFO_TIMEOUT if network issues cause long update times.
+
+Sharding:
+Shard clusters across multiple controller replicas to manage memory use.
+Set replicas in argocd-application-controller StatefulSet 
+and ARGOCD_CONTROLLER_REPLICAS environment variable.
+Sharding methods: legacy (default) and round-robin.
+Round-robin sharding is experimental and may cause reshuffling when clusters are removed.
+
+Environment Variables:
+ARGOCD_ENABLE_GRPC_TIME_HISTOGRAM: Enables RPC performance metrics (expensive).
+ARGOCD_CLUSTER_CACHE_LIST_PAGE_BUFFER_SIZE: Controls buffer size for list operations 
+against K8s API server to prevent sync errors.
+
+Metrics:
+argocd_app_reconcile: Reports application reconciliation duration.
+argocd_app_k8s_request_total: Tracks the number of Kubernetes requests per application.
+By simplifying these key points, the summary highlights the primary functions and 
+configurations of the argocd-application-controller, along with tips for optimizing 
+performance and handling large-scale deployments.
+
+
+
