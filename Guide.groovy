@@ -51,8 +51,6 @@ by applying changes to a Kubernetes cluster.
 III. ArgoCD-Architecture
 ------------------------
 
-
-
 1. An Api Server is a gRPC/REST server that provides an interface for the Web Ui, 
 Command line tools, and CI/CD systems to interact with an application. 
 
@@ -60,7 +58,7 @@ It performs the following tasks:
 
 .Manages Applications and reports their status
 .Executes operations like synchronization, rollback, and user-defined actions
-.Manages repository and cluster credentials, storing them as Kubernetes secrets
+.Manages Repository and Cluster Credentials, storing them as Kubernetes Secrets
 .Handles authentication and delegates authorization to external identity providers
 .Enforces role-based access control (RBAC)
 .Listens to and processes Git webhook events.
@@ -69,14 +67,18 @@ It performs the following tasks:
 Git repository containing application manifests. It generates and returns Kubernetes manifests 
 based on the following inputs:
 
-Repository URL
-Revision (commit, tag, branch)
-Application path
-Template-specific settings: parameters and Helm values.yaml
+.Repository URL
+.Revision (commit, tag, branch)
+.Application path
+.Template-specific settings: parameters and Helm values.yaml
 
+3. An Application Controller is a Kubernetes Controller that Continuously Monitors
+Running Applications, comparing their Current State to the Desired State specified in the 
+repository. It identifies when applications are out of sync and can optionally 
+take corrective action. It also invokes user-defined hooks for lifecycle events,
+such as PreSync, Sync, and PostSync.
 
-
-IV. Steps for Getting started :
+IV. Steps for Getting started 
 --------------------------------
 --------------------------------
 
@@ -120,7 +122,7 @@ Download the latest Argo CD version from https://github.com/argoproj/argo-cd/rel
 
 Also available in Mac, Linux and WSL Homebrew:
 
-"brew install argocd"
+brew install argocd
 
 . Use [[argocd login --core]] to Configure Cli Access and skip steps 3-5. 
 
@@ -152,7 +154,7 @@ The Ambassador Edge Stack can be used as a Kubernetes Ingress Controller with au
 TlS Termination and routing capabilities for both the CLI and the UI.
 
 The API server should be run with TLS disabled. Edit the argocd-server deployment to add 
-the "--insecure" flag to the argocd-server command, or simply set server.insecure: "true" 
+the --insecure flag to the argocd-server command, or simply set server.insecure: "true" 
 in the argocd-cmd-params-cm ConfigMap as described here. 
 Given the argocd CLI includes the port number in the request host header, 
 2 Mappings are required.
