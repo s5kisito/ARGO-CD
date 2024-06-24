@@ -488,24 +488,101 @@ b.Syncing via UI (TBD)
 
 
 
-IV.Tls Configuration
--------------------
+IV TlS (Transport Layer Security) Configuration:
+------------------------------------------------
 
-Argo CD provides three inbound Tls edgendpoints that can be configured:
+This is about setting up secure connections for Argo CD 
 
-.The user-facing endpoint of the Argocd-Server workload which serves the UI and the API
-.The endpoint of the Argocd-Repo-Server, which is accessed by argocd-server and 
-argocd-application-controller workloads to request repository operations.
-.The endpoint of the Argocd-Dex-Server, which is accessed by argocd-server to handle 
-OIDC authentication.
+Argo Cd has three(3) key points where TlS is configured:
 
-P.S : By Default Once ArgoCD is installed it comes with Self-Signed-Certificate 
-for the (3 endpoints) 
+.Argocd-Server: {User-Facing Endpoint}:
+it handles the user interface (UI) and the (API).
 
-To be able to manage it ourselves me need to supply our own Certificate-Manager, or 
-Certificate Authority, (for 3 endpoints).
+.Argocd-Repo-Server:{Repository Server Endpoint}
+it communicates with the argocd-server and argocd-application-controller to manage tasks
+related to code repositories.
 
-1 - Tls 
+.Argocd-Dex-Server:{Authentication Server Endpoint}:
+This is part of the Argocd-Dex-Server and helps with authentication processes. 
+The argocd-server uses it to handle Login via OpenID Connect (OIDC).
+
+
+Default Behavior:
+
+By default, these endpoints use a Self-Signed Certificate. 
+This means the system automatically generates a certificate for secure communication, 
+but it might not be trusted by all users.
+
+
+In Sum, Configuring TLS for Argo CD involves setting up secure Communication channels 
+for different parts of the system, either using 
+default Self-Signed Certificates(A) or by providing Custom, Trusted Certificates(B).
+
+Custom Configuration:
+---------------------
+
+Most users prefer to set up their own certificates for better security and trust.
+You can use tools like Cert-Manager or your own Certificate Authority to manage these 
+certificates as follows:
+
+1. Argocd-Server: {User-Facing Endpoint}
+
+There are Two(2) Methods:
+
+a. Preferred Method: Set the 'tls.crt' and 'tls.key' in the argocd-server-tls secret 
+with the Certificate and Private Key data.
+
+b. Deprecated Method: Set the tls.crt and tls.key in the argocd-secret secret (for backward compatibility, not recommended).
+
+Notes:
+------
+
+TLS Certificate Selection Process:
+
+.First: If argocd-server-tls secret has valid tls.crt and tls.key, 
+Argo CD uses this certificate.
+
+.Second: If argocd-server-tls is missing or invalid, 
+Argo CD checks argocd-secret for valid tls.crt and tls.key.
+
+.Fallback: If neither secret has valid keys, Argo CD generates a self-signed certificate and stores it in argocd-secret.
+Managing the argocd-server-tls Secret:
+
+.This secret is specifically for TLS configuration and can be managed by tools like cert-manager or SealedSecrets.
+
+.To manually create the secret from an existing certificate and key, use the kubectl command:
+
+kubectl create -n argocd secret tls argocd-server-tls \
+  --cert=/path/to/cert.pem \
+  --key=/path/to/key.pem
+
+Automatic Updates:
+Argo CD automatically picks up changes to the argocd-server-tls secret without needing to 
+restart the pods.
+
+2. Argocd-Repo-Server:{Repository Server Endpoint}
+
+Setting Up TLS Certificates:
+
+Create a secret named 'argocd-repo-server-tls' in the Argo CD namespace 
+with the TlS Certificate and Key.
+
+Creating the Secret Manually:
+Use the kubectl command to create the secret from a certificate and key file:
+
+kubectl create -n argocd secret tls argocd-repo-server-tls \
+  --cert=/path/to/cert.pem \
+  --key=/path/to/key.pem
+
+For self-signed certificates, also add ca.crt with the CA certificate content.
+
+Important Notes:
+----------------
+Unlike argocd-server, argocd-repo-server does not automatically detect changes to the TLS 
+secret. You must restart the argocd-repo-server pods to apply updates.
+The certificate should include correct SAN (Subject Alternative Name) entries for
+argocd-repo-server, such as DNS:argocd-repo-server and DNS:argocd-repo-server.argo-cd.svc, 
+to ensure proper connectivity.
 
 
 
