@@ -2,7 +2,7 @@
 I. What is ArgoCD? (Definition) & Why?
 -------------------------------------
 
-1.Definition:  Argo Cd is a declarative, GitOps Continuous Delivery tool for Kubernetes, 
+1.Definition:  Argo Cd is A declarative, GitOps Continuous Delivery tool for Kubernetes, 
 managing application deployments by synchronizing the Desired State defined in Git with the
 Live State in the Cluster.
 
@@ -19,12 +19,12 @@ Secure and Scalable workflows.
 II. Core Concepts:
 ------------------
 
-.Application: A group of Kubernetes resources as defined by a manifest. 
-This is a Custom Resource Definition (CRD).
+.Application: A group of Kubernetes resources as defined by A manifest. 
+This is A Custom Resource Definition (CRD).
 
 .Application: source type Which Tool is used to build the application.
 
-.Target State: The Desired State of an application, as represented by files in a Git repository.
+.Target State: The Desired State of an application, as represented by files in A Git repository.
 
 .Live State: The live state of that application. What pods etc are deployed.
 
@@ -32,15 +32,15 @@ This is a Custom Resource Definition (CRD).
 Is the deployed application the same as Git says it should be?
 
 .Sync: The process of making an application move to its target state. E.g. 
-by applying changes to a Kubernetes cluster.
+by applying changes to A Kubernetes cluster.
 
-.Sync Operation Status: Whether or not a sync succeeded.
+.Sync Operation Status: Whether or not A sync succeeded.
 
 .Refresh Compare: the latest code in Git with the live state. Figure out what is different.
 
 .Health: The health of the application, is it running correctly? Can it serve requests?
 
-.Tool : A tool to create manifests from a directory of files. E.g. Kustomize. See Application
+.Tool : A tool to create manifests from A directory of files. E.g. Kustomize. See Application
  Source Type.
 
 .Configuration management tool See Tool.
@@ -51,7 +51,7 @@ by applying changes to a Kubernetes cluster.
 III. ArgoCD-Architecture
 ------------------------
 
-1. An Api Server is a gRPC/REST server that provides an interface for the Web Ui, 
+1. An Api Server is A gRPC/REST server that provides an interface for the Web Ui, 
 Command line tools, and CI/CD systems to interact with an application. 
 
 It performs the following tasks:
@@ -63,7 +63,7 @@ It performs the following tasks:
 .Enforces role-based access control (RBAC)
 .Listens to and processes Git webhook events.
 
-2. A repository server is an internal service that keeps a local copy of the 
+2. A repository server is an internal service that keeps A local copy of the 
 Git repository containing application manifests. It generates and returns Kubernetes manifests 
 based on the following inputs:
 
@@ -72,7 +72,7 @@ based on the following inputs:
 .Application path
 .Template-specific settings: parameters and Helm values.yaml
 
-3. An Application Controller is a Kubernetes Controller that Continuously Monitors
+3. An Application Controller is A Kubernetes Controller that Continuously Monitors
 Running Applications, comparing their Current State to the Desired State specified in the 
 repository. It identifies when applications are out of sync and can optionally 
 take corrective action. It also invokes user-defined hooks for lifecycle events,
@@ -86,7 +86,7 @@ IV. Steps for Getting started
 Requirements for ArgoCD:
 
 .Installed kubectl command-line tool.
-.Have a kubeconfig file (default location is ~/.kube/config).
+.Have A kubeconfig file (default location is ~/.kube/config).
 .CoreDNS. Can be enabled for microk8s by microk8s enable dns && microk8s stop && microk8s start
 
 
@@ -97,16 +97,16 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 .The installation manifests include ClusterRoleBinding resources that reference argocd Namespace.
-If you are installing Argo CD into a different namespace then make sure to update the namespace
+If you are installing Argo CD into A different namespace then make sure to update the namespace
 reference.
 .Default namespace for kubectl config must be set to argocd. This is only needed for the 
 following commands since the previous commands have -n argocd already:
 "kubectl config set-context --current --namespace=argocd"
 
-P.S : This default installation will have a [[Self-Signed Certificate]] and cannot be accessed 
-without a bit of extra work. Do one of:
+P.S : This default installation will have A [[Self-Signed Certificate]] and cannot be accessed 
+without A bit of extra work. Do one of:
 
-a.Follow the instructions to configure a certificate (and ensure that the client OS trusts it).
+A.Follow the instructions to configure A certificate (and ensure that the client OS trusts it).
 https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/
 
 b.Configure the client OS to trust the self signed certificate.
@@ -134,14 +134,14 @@ brew install argocd
 --------------------------------
 By default, the Argo CD API server is not exposed with an external IP. To access the API server, choose one of the following techniques to expose the Argo CD API server:
 
-a.'Service Type Load Balancer'.
+A.'Service Type Load Balancer'.
 Change the argocd-server service type to LoadBalancer:
  kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
 
 b.Ingress
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
-Argo CD API server runs both a gRPC server (used by the CLI), as well as a HTTP/HTTPS server (used by the UI). Both protocols are exposed by the argocd-server service object on the following ports:
+Argo CD API server runs both A gRPC server (used by the CLI), as well as A HTTP/HTTPS server (used by the UI). Both protocols are exposed by the argocd-server service object on the following ports:
 
 443 - gRPC/HTTPS
 80 - HTTP (redirects to HTTPS)
@@ -150,7 +150,7 @@ There are several ways how Ingress can be configured:
 
 - Ambassador
 
-The Ambassador Edge Stack can be used as a Kubernetes Ingress Controller with automatic 
+The Ambassador Edge Stack can be used as A Kubernetes Ingress Controller with automatic 
 TlS Termination and routing capabilities for both the CLI and the UI.
 
 The API server should be run with TLS disabled. Edit the argocd-server deployment to add 
@@ -191,7 +191,7 @@ Login with the argocd CLI:
 
 ** Option 2: Mapping CRD for Path-based Routing¶
 
-The API server must be configured to be available under a non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
+The API server must be configured to be available under A non-root path (e.g. /argo-cd). Edit the argocd-server deployment to add the --rootpath=/argo-cd flag to the argocd-server command.
 
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -215,9 +215,9 @@ insecure: "true" in the argocd-cmd-params-cm ConfigMap as described here.
 It is also possible to provide an internal-only ingress path and an external-only ingress 
 path by deploying two instances of Contour: 
 
-one behind a private-subnet LoadBalancer service 
+one behind A private-subnet LoadBalancer service 
 
-and one behind a public-subnet LoadBalancer service.
+and one behind A public-subnet LoadBalancer service.
 
 The private Contour deployment will pick 
 up Ingresses annotated with 
@@ -229,7 +229,7 @@ will pick up Ingresses annotated with kubernetes.io/ingress.class: contour-exter
 for SSO callbacks to succeed.
 
 Private Argo CD UI with Multiple Ingress Objects and BYO Certificate¶
-Since Contour Ingress supports only a single protocol per Ingress object, 
+Since Contour Ingress supports only A single protocol per Ingress object, 
 define three(3) Ingress objects. 
 
 One for private HTTP/HTTPS, 
@@ -327,7 +327,7 @@ in the argocd-cmd-params-cm ConfigMap as described here.
 
 Contour httpproxy CRD:
 
-Using a contour httpproxy CRD allows you to use the same hostname for the GRPC and REST api.
+Using A contour httpproxy CRD allows you to use the same hostname for the GRPC and REST api.
 
 
 apiVersion: projectcontour.io/v1
@@ -395,17 +395,17 @@ Change the password using the command:
 5. Register A Cluster To Deploy Apps To (Optional)
 --------------------------------------------------
 
-This step registers a cluster credentials to Argo CD, and is only necessary when deploying 
+This step registers A cluster credentials to Argo CD, and is only necessary when deploying 
 to an external cluster. When deploying internally (to the same cluster that Argo CD is running 
 in), https://kubernetes.default.svc should be used as the applications K8s API server address.
 
 .First list all clusters contexts in your current kubeconfig:
 'kubectl config get-contexts -o name'
 
-Choose a context name from the list and supply it to argocd cluster add CONTEXTNAME. For example, for docker-desktop context, run:
+Choose A context name from the list and supply it to argocd cluster add CONTEXTNAME. For example, for docker-desktop context, run:
 'argocd cluster add docker-desktop'
 
-The above command installs a ServiceAccount (argocd-manager), into the kube-system namespace
+The above command installs A ServiceAccount (argocd-manager), into the kube-system namespace
  of that kubectl context, and binds the service account to an admin-level ClusterRole. 
  Argo CD uses this service account token to perform its 
  management tasks (i.e. deploy/monitoring).
@@ -413,17 +413,17 @@ The above command installs a ServiceAccount (argocd-manager), into the kube-syst
 Note
 
 The rules of the argocd-manager-role role can be modified such that it only has 
-'create, update, patch, delete privileges' to a limited set of 'namespaces, groups, kinds'.
+'create, update, patch, delete privileges' to A limited set of 'namespaces, groups, kinds'.
 However 'get, list, watch privileges' are required at the cluster-scope for Argo CD to 
 function.
 
 6. Create An Application From A Git Repository¶
 -----------------------------------------------
 
-An example repository containing a guestbook application is available at 
+An example repository containing A guestbook application is available at 
 https://github.com/argoproj/argocd-example-apps.git to demonstrate how Argo CD works.
 
-a.Creating Apps Via CLI¶
+A.Creating Apps Via CLI¶
 -First we need to set the current namespace to argocd running the following command:
 'kubectl config set-context --current --namespace=argocd'
 
@@ -432,7 +432,7 @@ a.Creating Apps Via CLI¶
 '
 
 b.Creating Apps Via UI¶
--Open a browser to the Argo CD external UI, and login by visiting the IP/hostname in a browser and use the credentials set in step 4.
+-Open A browser to the Argo CD external UI, and login by visiting the IP/hostname in A browser and use the credentials set in step 4.
 
 -After logging in, click the + New App button as shown below:
 + new app button
@@ -452,7 +452,7 @@ destination
 7. Sync (Deploy) The Application
 --------------------------------
 
-a.Syncing via CLI¶
+A.Syncing via CLI¶
 Once the guestbook application is created, you can now view its status:
 
 
@@ -478,7 +478,7 @@ deployed, and no Kubernetes resources have been created. To sync (deploy) the ap
 
 [['argocd app sync guestbook']]
 
-This command retrieves the manifests from the repository and performs a kubectl apply of the 
+This command retrieves the manifests from the repository and performs A kubectl apply of the 
 manifests. The guestbook app is now running and you can now view its resource components, logs,
 events, and assessed health status.
 
@@ -514,19 +514,19 @@ Certificate Authority, (for 3 endpoints).
 V. High Availability.
 
 Argo CD is largely stateless. All data is persisted as Kubernetes objects, which in turn is stored 
-in Kubernetes etcd. Redis is only used as a throw-away cache and can be lost. When lost, 
+in Kubernetes etcd. Redis is only used as A throw-away cache and can be lost. When lost, 
 it will be rebuilt without loss of service.
 
-A set of HA manifests are provided for users who wish to run Argo CD in a highly available manner.
+A set of HA manifests are provided for users who wish to run Argo CD in A highly available manner.
  This runs more containers, and runs Redis in HA mode.
 
 NOTE: The HA installation will require at least Three(3) Different Nodes due to Pod Anti-Affinity roles in 
 the specs. Additionally, IPv6 only clusters are not supported.
 
-argocd-repo-server is like a librarian for your application blueprints (stored in Git repositories). 
+argocd-repo-server is like A librarian for your application blueprints (stored in Git repositories). 
 It fetches these blueprints, makes sure they are up to date, 
 and serves them to Argo CD so it can deploy and manage your applications correctly on Kubernetes. 
-This server plays a crucial role in ensuring that the applications you deploy are based on the latest 
+This server plays A crucial role in ensuring that the applications you deploy are based on the latest 
 configurations stored in your Git repositories, 
 allowing for efficient and reliable application management at scale.
 
@@ -539,7 +539,7 @@ stored in Git. The argocd-application-controller checks these configurations reg
 if any updates or changes are needed. If it finds something new or different in the Git repository, 
 it makes sure that the application on Kubernetes gets updated accordingly.
 
-So, it is like a vigilant supervisor that ensures your applications on Kubernetes always match the latest 
+So, it is like A vigilant supervisor that ensures your applications on Kubernetes always match the latest 
 settings you have defined in Git. This helps keep your applications running smoothly and consistently, 
 even as you make changes or improvements over time.
 
@@ -557,12 +557,12 @@ The --parallelismlimit flag limits the number of concurrent manifest generations
 to prevent memory issues.
 
 Repository State:
-Keeps the repository in a clean state during manifest generation. 
-Multiple applications in a single repository can impact performance.
+Keeps the repository in A clean state during manifest generation. 
+Multiple applications in A single repository can impact performance.
 
 Disk Space Management:
-Clones repositories into /tmp or a specified path. 
-To avoid running out of disk space, use a persistent volume.
+Clones repositories into /tmp or A specified path. 
+To avoid running out of disk space, use A persistent volume.
 
 Handling Revisions:
 Uses git ls-remote to resolve ambiguous revisions frequently. 
@@ -574,7 +574,7 @@ Reduce cache time with --repo-cache-expiration if necessary, but this may reduce
 benefits.
 
 Execution Timeout:
-Executes tools with a 90-second timeout, adjustable with ARGOCD_EXEC_TIMEOUT.
+Executes tools with A 90-second timeout, adjustable with ARGOCD_EXEC_TIMEOUT.
 
 Metrics:
 argocd_git_request_total: Tracks the number of Git requests, tagged by repository URL and 
@@ -599,7 +599,7 @@ Limited to prevent queue overflow.
 Increase --repo-server-timeout-seconds if reconciliations fail due to timeout.
 
 Kubernetes Watch APIs:
-Maintains a lightweight cluster cache for improved performance.
+Maintains A lightweight cluster cache for improved performance.
 Monitors only preferred versions of resources.
 Converts cached resources to the version in Git during reconciliation.
 Fallback to Kubernetes API query if conversion fails, which slows down reconciliation.
@@ -634,13 +634,19 @@ VI- User Management
 ------------------
 ------------------
 
-1- Always note that the first user is the admin. Use the Admin User to create users and update password for the first time.
+1- Always note that the first user is the admin. Use the Admin User to create users and update
+password for the first time.
 
-2- Local users/accounts: here this option allows the devops engineer to create 2 types of less privileged users. There are 2 types: 
-Auth tokens: mainly a feature for automation(non-human users). The token is generated with limited privileges to create applications and projects.
-Local users: for other people within the company.
+2- Local Users/Accounts: here this option allows the devops engineer to create 2 
+Types Of Less Privileged Users. There are 2 types: 
 
-To create users it is mandatory to use Configmap. Here is an example: 
+.Auth Tokens: mainly A Feature for automation(non-human users). The Token is generated with 
+Limited Privileges to Create Applications and Projects.
+
+.Local Users: for other People Within The Company.
+
+To Create Users it is mandatory to use Configmap. Here is an example: 
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -657,9 +663,20 @@ data:
   # disables user. User is enabled by default
   accounts.alice.enabled: "false"
 
-To delete the user: kubectl patch -n argocd cm argocd-cm --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice"}]'
-It is important to delete his password in the secrets: kubectl patch -n argocd secrets argocd-secret --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice.password"}]'
-After creating the users, it is important to remove the admin user: 
+To Delete The User: 
+
+
+
+kubectl patch -n argocd cm argocd-cm --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice"}]'
+
+kubectl patch -n argocd secrets argocd-secret --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice.password"}]'
+
+Note: After Deleting A  User, Also Delete his Password as mentioned above:
+-----
+
+P.S After creating the users, it is important to remove the admin user: 
+-----------------------------------------------------------------------
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -672,21 +689,27 @@ data:
   admin.enabled: "false"
 
 
-3- Important commands to manage  users: 
+3- Important Commands to Manage  Users: 
 
-Get full users list : “argocd account list”
-Get specific user details : “argocd account get --account <username>”
-Set user password: 
+Get Full Users List : “argocd account list”
+
+Get Specific User Details : “argocd account get --account <username>”
+
+Set User Password: 
 # if you are managing users as the admin user, <current-user-password> should be the current admin password.
 argocd account update-password \
   --account <name> \
   --current-password <current-user-password> \
   --new-password <new-user-password
-Generate auth token:
+
+Generate Auth Token:
 # if flag --account is omitted then Argo CD generates token for current user
+
 argocd account generate-token --account <username>
 
-4- How to use Role Based Access Control[[(RBAC)]] to limit or define privileges within the users of argoCD.
+4- How to use Role Based Access Control[[(RBAC)]] to Limit or Define Privileges within the Users
+of argoCD.
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -710,17 +733,17 @@ data:
 
     g, your-github-org:your-team, role:org-admin
 
-To validate a policy stored in a local text file:
-argocd admin settings rbac validate --policy-file somepolicy.csv
+To Validate A Policy Stored in A Local Text File:
+argocd admin settings rbac Validate --policy-file somepolicy.csv
 
-To validate a policy stored in a local K8s ConfigMap definition in a YAML file:
-argocd admin settings rbac validate --policy-file argocd-rbac-cm.yaml
+To Validate A Policy Stored in A local K8s ConfigMap definition in A YAML file:
+argocd admin settings rbac Validate --policy-file argocd-rbac-cm.yaml
 
-To validate a policy stored in K8s, used by Argo CD in namespace argocd, ensure that your current context in ~/.kube/config is pointing to your Argo CD cluster and give appropriate namespace:
-argocd admin settings rbac validate --namespace argocd
+To Validate A Policy Stored in K8s, used by Argo CD in namespace argocd, ensure that your current context in ~/.kube/config is pointing to your Argo CD cluster and give appropriate namespace:
+argocd admin settings rbac Validate --namespace argocd
 
-Testing a policy¶
-To test whether a role or subject (group or local user) has sufficient permissions to execute certain actions on certain resources, you can use the argocd admin settings rbac can command. Its general syntax is
+Testing A policy¶
+To test whether A role or subject (group or local user) has sufficient permissions to execute certain actions on certain resources, you can use the argocd admin settings rbac can command. Its general syntax is
 argocd admin settings rbac can SOMEROLE ACTION RESOURCE SUBRESOURCE [flags]
 Given the example from the above ConfigMap, which defines the role role:org-admin, and is stored on your local system as argocd-rbac-cm-yaml, you can test whether that role can do something like follows:
 
@@ -739,15 +762,15 @@ Yes
 Another example, given the policy above from policy.csv, which defines the role role:staging-db-admin and associates the group db-admins with it. Policy is stored locally as policy.csv:
 
 You can test against the role:
-$ # Plain policy, without a default role defined
+$ # Plain policy, without A default role defined
 $ argocd admin settings rbac can role:staging-db-admin get applications --policy-file policy.csv
 No
 
 $ argocd admin settings rbac can role:staging-db-admin get applications 'staging-db-project/*' --policy-file policy.csv
 Yes
 
-$ # Argo CD augments a builtin policy with two roles defined, the default role
-$ # being 'role:readonly' - You can include a named default role to use:
+$ # Argo CD augments A builtin policy with two roles defined, the default role
+$ # being 'role:readonly' - You can include A named default role to use:
 $ argocd admin settings rbac can role:staging-db-admin get applications --policy-file policy.csv --default-role role:readonly
 Yes
 Or against the group defined:
