@@ -584,11 +584,33 @@ The certificate should include correct SAN (Subject Alternative Name) entries fo
 argocd-repo-server, such as DNS:argocd-repo-server and DNS:argocd-repo-server.argo-cd.svc, 
 to ensure proper connectivity.
 
+3. Argocd-Dex-Server:{Authentication Server Endpoint}
 
 
+Setting Up TLS Certificates:
+
+Create a secret named 'argocd-dex-server-tls' in the Argo CD namespace with 
+the TlS Certificate and Key.
+
+Creating the Secret Manually:
+
+Use the kubectl command to create the secret from a certificate and key file:
+
+kubectl create -n argocd secret tls argocd-dex-server-tls \
+  --cert=/path/to/cert.pem \
+  --key=/path/to/key.pem
+For self-signed certificates, also add ca.crt with the CA certificate content.
+
+Important Notes:
+If this secret is missing, a self-signed certificate is generated.
+Unlike argocd-server, argocd-dex-server does not automatically detect changes to the TLS secret. You must restart the argocd-dex-server pods to apply updates.
+The certificate should include correct SAN (Subject Alternative Name) entries 
+for argocd-dex-server, such as DNS:argocd-dex-server and DNS:argocd-dex-server.argo-cd.svc, 
+to ensure proper connectivity.
 
 
 V. High Availability.
+--------------------
 
 Argo CD is largely stateless. All data is persisted as Kubernetes objects, which in turn is stored 
 in Kubernetes etcd. Redis is only used as A throw-away cache and can be lost. When lost, 
