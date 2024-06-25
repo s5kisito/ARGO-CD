@@ -518,7 +518,7 @@ In Sum, Configuring TLS for Argo CD involves setting up secure Communication cha
 for different parts of the system, either using 
 default Self-Signed Certificates(A) or by providing Custom, Trusted Certificates(B).
 
-Custom Configuration:
+Custom Configuration:(B)
 ---------------------
 
 Most users prefer to set up their own certificates for better security and trust.
@@ -529,36 +529,41 @@ certificates as follows:
 
 There are Two(2) Methods:
 
-a. Preferred Method: Set the 'tls.crt' and 'tls.key' in the argocd-server-tls secret 
+a. Preferred Method: Set the 'tls.crt' and 'tls.key' in the "argocd-server-tls secret" 
 with the Certificate and Private Key data.
 
-b. Deprecated Method: Set the tls.crt and tls.key in the argocd-secret secret (for backward compatibility, not recommended).
+b. Deprecated Method(not use anymore): 
+Set the tls.crt and tls.key in the argocd-secret secret (for backward compatibility, 
+not recommended).
 
 Notes:
 ------
 
 TLS Certificate Selection Process:
 
-.First: If argocd-server-tls secret has valid tls.crt and tls.key, 
-Argo CD uses this certificate.
+.First: If 'argocd-server-tls secret' has valid 'tls.crt' and 'tls.key', 
+Argo CD uses this Certificate.
 
-.Second: If argocd-server-tls is missing or invalid, 
-Argo CD checks argocd-secret for valid tls.crt and tls.key.
+.Second: If 'argocd-server-tls' is missing or invalid, 
+Argo CD checks 'argocd-secret' for 'valid tls.crt' and 'tls.key'.
 
-.Fallback: If neither secret has valid keys, Argo CD generates a self-signed certificate and stores it in argocd-secret.
-Managing the argocd-server-tls Secret:
+.Fallback: If neither secret has valid keys, Argo CD generates a Self-Signed Certificate
+ and stores it in argocd-secret.
 
-.This secret is specifically for TLS configuration and can be managed by tools like cert-manager or SealedSecrets.
+Managing the 'argocd-server-tls Secret':
+
+.This secret is specifically for TlS Configuration and can be managed by tools 
+like Cert-Manager or SealedSecrets.
 
 .To manually create the secret from an existing certificate and key, use the kubectl command:
 
-kubectl create -n argocd secret tls argocd-server-tls \
+'kubectl create -n argocd secret tls argocd-server-tls \
   --cert=/path/to/cert.pem \
-  --key=/path/to/key.pem
+  --key=/path/to/key.pem'
 
 Automatic Updates:
-Argo CD automatically picks up changes to the argocd-server-tls secret without needing to 
-restart the pods.
+'Argo CD automatically picks up changes to the argocd-server-tls secret without needing to 
+restart the pods.'
 
 2. Argocd-Repo-Server:{Repository Server Endpoint}
 
@@ -570,24 +575,24 @@ with the TlS Certificate and Key.
 Creating the Secret Manually:
 Use the kubectl command to create the secret from a certificate and key file:
 
-kubectl create -n argocd secret tls argocd-repo-server-tls \
+'kubectl create -n argocd secret tls argocd-repo-server-tls \
   --cert=/path/to/cert.pem \
-  --key=/path/to/key.pem
+  --key=/path/to/key.pem'
 
-For self-signed certificates, also add ca.crt with the CA certificate content.
+For Self-Signed Certificates, also add 'ca.crt with the CA certificate content'.
 
 Important Notes:
 ----------------
-Unlike argocd-server, argocd-repo-server does not automatically detect changes to the TLS 
-secret. You must restart the argocd-repo-server pods to apply updates.
-The certificate should include correct SAN (Subject Alternative Name) entries for
-argocd-repo-server, such as DNS:argocd-repo-server and DNS:argocd-repo-server.argo-cd.svc, 
+'Unlike argocd-server, argocd-repo-server does not automatically detect changes to the TLS 
+secret'. You must Restart the 'argocd-repo-server pods' to apply updates.
+The Certificate should include correct SAN (Subject Alternative Name) entries for
+'argocd-repo-server', such as 'DNS:argocd-repo-server' and 'DNS:argocd-repo-server.argo-cd.svc' 
 to ensure proper connectivity.
 
 3. Argocd-Dex-Server:{Authentication Server Endpoint}
 
 
-Setting Up TLS Certificates:
+Setting Up TlS Certificates:
 
 Create a secret named 'argocd-dex-server-tls' in the Argo CD namespace with 
 the TlS Certificate and Key.
@@ -596,14 +601,15 @@ Creating the Secret Manually:
 
 Use the kubectl command to create the secret from a certificate and key file:
 
-kubectl create -n argocd secret tls argocd-dex-server-tls \
+'kubectl create -n argocd secret tls argocd-dex-server-tls \
   --cert=/path/to/cert.pem \
-  --key=/path/to/key.pem
-For self-signed certificates, also add ca.crt with the CA certificate content.
+  --key=/path/to/key.pem'
+
+For Self-Signed Certificates, also add 'ca.crt' with the CA Certificate Content.
 
 Important Notes:
-If this secret is missing, a self-signed certificate is generated.
-Unlike argocd-server, argocd-dex-server does not automatically detect changes to the TLS secret. You must restart the argocd-dex-server pods to apply updates.
+If this Secret is missing, a Self-Signed Certificate is Generated.
+Unlike 'argocd-server,argocd-dex-server' does not automatically detect changes to the TlS secret. You must restart the argocd-dex-server pods to apply updates.
 The certificate should include correct SAN (Subject Alternative Name) entries 
 for argocd-dex-server, such as DNS:argocd-dex-server and DNS:argocd-dex-server.argo-cd.svc, 
 to ensure proper connectivity.
