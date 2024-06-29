@@ -134,11 +134,12 @@ brew install argocd
 --------------------------------
 By default, the Argo CD API server is not exposed with an external IP. To access the API server, choose one of the following techniques to expose the Argo CD API server:
 
-A.'Service Type Load Balancer'.
-Change the argocd-server service type to LoadBalancer:
- kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
+a.'Service Type Load Balancer'
 
-b.Ingress
+Change the argocd-server service type to LoadBalancer:
+kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
+
+b.Ingress 
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
 Argo CD API server runs both A gRPC server (used by the CLI), as well as A HTTP/HTTPS server (used by the UI). Both protocols are exposed by the argocd-server service object on the following ports:
@@ -168,7 +169,7 @@ metadata:
   name: argocd-server-ui
   namespace: argocd
 spec:
-  host: argocd.example.com
+  host: 34.201.122.254
   prefix: /
   service: argocd-server:443
 ---
@@ -188,6 +189,7 @@ spec:
 
 Login with the argocd CLI:
 "argocd login <host>"
+
 
 ** Option 2: Mapping CRD for Path-based Routing¶
 
@@ -209,7 +211,7 @@ Login with the argocd CLI using the extra --grpc-web-root-path flag for non-root
 
 - Contour
 
-The Contour ingress controller can terminate TLS ingress traffic at the edge.
+The Contour Ingress Controller can terminate TLS ingress traffic at the edge.
 to add the --insecure flag to the argocd-server container command, or simply set server.
 insecure: "true" in the argocd-cmd-params-cm ConfigMap as described here.
 It is also possible to provide an internal-only ingress path and an external-only ingress 
@@ -362,6 +364,7 @@ spec:
           port: 80
 
 
+'ssh -i chriskeypair.pem -L 80:localhost:30080 -L 443:localhost:30443 ubuntu@54.81.54.68'
 
 
 c.'Port Forwarding'.
@@ -370,6 +373,9 @@ c.'Port Forwarding'.
 Kubectl port-forwarding can also be used to connect to the API server without exposing the service.
 
 [['kubectl port-forward svc/argocd-server -n argocd 8080:443']]
+"kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
+
+05C41FzsATUfjcCF
 
 The API server can then be accessed using https://localhost:8080
 
@@ -495,7 +501,7 @@ This is about setting up secure connections for Argo CD
 
 Argo Cd has three(3) key points where TlS is configured:
 
-.Argocd-Server: {User-Facing Endpoint}:
+.Argocd-Server: {User-Facing Endpoint}: 
 it handles the user interface (UI) and the (API).
 
 .Argocd-Repo-Server:{Repository Server Endpoint}
@@ -519,7 +525,7 @@ for different parts of the system, either using
 default Self-Signed Certificates(A) or by providing Custom, Trusted Certificates(B).
 
 Custom Configuration:(B)
----------------------
+-----------------------
 
 Most users prefer to set up their own certificates for better security and trust.
 You can use tools like Cert-Manager or your own Certificate Authority to manage these 
@@ -616,7 +622,8 @@ to ensure proper connectivity.
 
 
 V. High Availability.
---------------------
+---------------------
+---------------------
 
 Argo CD is largely stateless. All data is persisted as Kubernetes objects, which in turn is stored 
 in Kubernetes etcd. Redis is only used as A throw-away cache and can be lost. When lost, 
@@ -653,7 +660,7 @@ even as you make changes or improvements over time.
 
 Purpose:
 
-The argocd-repo-server handles cloning Git repositories, updating them, 
+The Argocd-Repo-Server handles cloning Git repositories, updating them, 
 and generating manifests using tools like Kustomize, Helm, or custom plugins.
 Key Points:
 
@@ -736,7 +743,7 @@ performance and handling large-scale deployments.
 
 
 VI- User Management 
-------------------
+-------------------
 ------------------
 
 1- Always note that the first user is the admin. Use the Admin User to create users and update
@@ -772,9 +779,9 @@ To Delete The User:
 
 
 
-kubectl patch -n argocd cm argocd-cm --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice"}]'
+kubectl patch -n argocd cm argocd-cm --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice"}]
 
-kubectl patch -n argocd secrets argocd-secret --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice.password"}]'
+kubectl patch -n argocd secrets argocd-secret --type='json' -p='[{"op": "remove", "path": "/data/accounts.alice.password"}]
 
 Note: After Deleting A  User, Also Delete his Password as mentioned above:
 -----
