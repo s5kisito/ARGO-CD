@@ -376,6 +376,7 @@ Kubectl port-forwarding can also be used to connect to the API server without ex
 "kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
 
 05C41FzsATUfjcCF
+AZ-l3NuGUlaONFrj
 
 The API server can then be accessed using https://localhost:8080
 
@@ -446,10 +447,13 @@ b.Creating Apps Via UI¶
 -Give your app the name guestbook, use the project default, and leave the sync policy as Manual
 app information
 
--Connect the https://github.com/argoproj/argocd-example-apps.git repo to Argo CD by setting repository url to the github repo url, leave revision as HEAD, and set the path to guestbook:
+-Connect the https://github.com/argoproj/argocd-example-apps.git repo to Argo CD 
+by setting repository url to the github repo url, leave revision as HEAD, 
+and set the path to guestbook:
 connect repo
 
--For Destination, set cluster URL to https://kubernetes.default.svc (or in-cluster for cluster name) and namespace to default:
+-For Destination, set cluster URL to https://kubernetes.default.svc 
+(or in-cluster for cluster name) and namespace to default:
 destination
 
 -After filling out the information above, click Create at the top of the UI to create the guestbook application:
