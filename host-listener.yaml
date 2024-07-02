@@ -1,0 +1,25 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Listener
+metadata:
+  name: ambassador-listener
+  namespace: ambassador
+spec:
+  port: 8080
+  protocol: HTTP
+  securityModel: XFP
+  hostBinding:
+    namespace:
+      from: ALL
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Host
+metadata:
+  name: ambassador-host
+  namespace: ambassador
+spec:
+  hostname: "*"
+  acmeProvider:
+    authority: none
+  requestPolicy:
+    insecure:
+      action: Route

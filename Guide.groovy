@@ -140,6 +140,8 @@ Change the argocd-server service type to LoadBalancer:
 kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
 
 b.Ingress 
+--------
+
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
 Argo CD API server runs both A gRPC server (used by the CLI), as well as A HTTP/HTTPS server (used by the UI). Both protocols are exposed by the argocd-server service object on the following ports:
@@ -150,12 +152,15 @@ Argo CD API server runs both A gRPC server (used by the CLI), as well as A HTTP/
 There are several ways how Ingress can be configured:
 
 - Ambassador
+-------------
 
 The Ambassador Edge Stack can be used as A Kubernetes Ingress Controller with automatic 
 TlS Termination and routing capabilities for both the CLI and the UI.
 
-The API server should be run with TLS disabled. Edit the argocd-server deployment to add 
-the --insecure flag to the argocd-server command, or simply set server.insecure: "true" 
+The API server should be run with TLS disabled. 
+
+.Edit the Argocd-Server deployment to add 
+the '--insecure' flag to the argocd-server command, or simply set server.insecure: "true" 
 in the argocd-cmd-params-cm ConfigMap as described here. 
 Given the argocd CLI includes the port number in the request host header, 
 2 Mappings are required.
@@ -207,6 +212,86 @@ spec:
 
 Login with the argocd CLI using the extra --grpc-web-root-path flag for non-root paths.
 "argocd login <host>:<port> --grpc-web-root-path /argo-cd"
+
+
+Prerequisites: 
+-------------
+
+Disable the Tls on the ArgoCD-Server by adding: '--insecure'
+on the ArgoCD-Server Deployment.Yaml
+
+
+1. https://app.getambassador.io/cloud/home/dashboard 
+
+Get your License by registering  with github and creating a token:
+
+export the token 
+export CLOUD_CONNECT_TOKEN=
+export CLOUD_CONNECT_TOKEN=
+export CLOUD_CONNECT_TOKEN=Y2FjNjkzNTUtMTg4Zi00YzlhLThjOTQtMTcxM2QyYWVjNTM2OmI2a2pBY29sWDcxa0EyTFdFSUNJQlYxVUlUR1FMQlZhdWpqaA==
+
+2.Create Self- Signed Tls to be used for Ambassador (as in aes.yaml) &
+ Supply Tls Secret to the (aes.yaml)
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt
+Output: Tls.Key; Tls.Crt
+
+
+'cat tls.crt | base64
+'                       (to supply to Aes.Yaml)
+'cat tls.key | base64
+'
+
+
+echo "your_base64_encoded_string" | base64 --decode
+
+
+(You will be prompt to enter country, state ,city organization, ocuupation, email, name)
+
+for Tls.Yaml
+
+
+3. Run this commands:
+
+mkdir ~/ambassador && cd ~/ambassador 
+wget https://app.getambassador.io/yaml/edge-stack/latest/aes-crds.yaml
+wget https://app.getambassador.io/yaml/edge-stack/latest/aes.yaml
+
+
+4. Now Edit the [[“aes.yaml”]] file by :
+
+a.Changing LoadBalancer to NodePort 
+
+In case you have no LoadBalancer resource. Look for the ambassador service beginning at
+ around line 206.
+In the spec section, you have the liberty to choose [[NodePort]] or leave is as LoadBalancer. 
+For this example, we are going to use NodePort. 
+
+b.Supply your license obtained in https://app.getambassador.io/cloud/home/dashboard 
+To   [[aes.yaml]]
+
+.echo -n 'your-license-key' |base64 # preferable and add it in the "license-key"
+.kubectl create secret generic ambassador-edge-stack --from-literal=license-key=ZDgyOWY2ZWYtNjliMy00NjdkLWEyY2YtMzc1ODgxMTIyY2RhOlZ3Y0RoRlQyTGR0RmdtZ0hZa3hWT3A3Q1pqV3NNZHlGM1NZaQ==
+
+
+4. Add a Listener & Host (listener.yaml & host.yaml)
+
+5. Add  Mapping for Ambassador-ArgoCD
+
+6. Apply these Commands:
+'kubectl apply -f aes-crds.yaml'
+'kubectl apply -f aes.yaml'
+kubectl get -n ambassador service edge-stack -o "go-template={{range .status.loadBalancer.ingress}}{{or .ip .hostname}}{{end}}"
+
+
+# https://app.getambassador.io/cloud/home/dashboard
+
+kubectl create secret generic ambassador-edge-stack --from-literal=license-key=ZDgyOWY2ZWYtNjliMy00NjdkLWEyY2YtMzc1ODgxMTIyY2RhOlZ3Y0RoRlQyTGR0RmdtZ0hZa3hWT3A3Q1pqV3NNZHlGM1NZaQ==
+-n ambassador --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl create secret generic ambassador-edge-stack --from-literal=license-key=
+<your-license-key> -n ambassador --dry-run=client -o yaml | kubectl apply -f -
+
 
 
 - Contour
@@ -373,7 +458,7 @@ c.'Port Forwarding'.
 Kubectl port-forwarding can also be used to connect to the API server without exposing the service.
 
 [['kubectl port-forward svc/argocd-server -n argocd 8080:443']]
-"kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
+"kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8086:443"
 
 05C41FzsATUfjcCF
 AZ-l3NuGUlaONFrj
@@ -892,3 +977,6 @@ Yes
 Or against the group defined:
 $ argocd admin settings rbac can db-admins get applications 'staging-db-project/*' --policy-file policy.csv
 Yes
+
+
+https://app.getambassador.io/cloud/home/dashboard

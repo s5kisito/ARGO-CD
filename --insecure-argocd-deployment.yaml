@@ -51,7 +51,7 @@ spec:
       containers:
       - args:
         - /usr/local/bin/argocd-server
-        - --insecure # Added flag
+        - --insecure                           # ADDED  flag IN HERE 
         env:
         - name: REDIS_PASSWORD
           valueFrom:
