@@ -7,10 +7,7 @@ on the ArgoCD-Server Deployment.Yaml
 
 Get your License by registering  with github and creating a token:
 
-export the token 
-export CLOUD_CONNECT_TOKEN=
-export CLOUD_CONNECT_TOKEN=
-export CLOUD_CONNECT_TOKEN=Y2FjNjkzNTUtMTg4Zi00YzlhLThjOTQtMTcxM2QyYWVjNTM2OmI2a2pBY29sWDcxa0EyTFdFSUNJQlYxVUlUR1FMQlZhdWpqaA==
+export CLOUD_CONNECT_TOKEN=YjczYmI1MzAtMDdjMy00MTIzLWIyNWMtMjU4MGZiZTBiODgxOnVmODhUQmlYcGhUMEp4Z0phYXBYOWtUT1VEVTZFRWpRR2tFRQ==
 
 2.Create Self- Signed Tls to be used for Ambassador (as in aes.yaml) &
  Supply Tls Secret to the (aes.yaml)
@@ -77,3 +74,9 @@ kubectl create secret generic ambassador-edge-stack --from-literal=license-key=
 <your-license-key> -n ambassador --dry-run=client -o yaml | kubectl apply -f -
 
 
+
+
+
+kubectl annotate clusterrole edge-stack-agent meta.helm.sh/release-name=edge-stack --overwrite
+kubectl annotate clusterrole edge-stack-agent meta.helm.sh/release-namespace=ambassador --overwrite
+kubectl label clusterrole edge-stack-agent app.kubernetes.io/managed-by=Helm --overwrite

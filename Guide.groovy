@@ -63,7 +63,7 @@ It performs the following tasks:
 .Enforces role-based access control (RBAC)
 .Listens to and processes Git webhook events.
 
-2. A repository server is an internal service that keeps A local copy of the 
+2. A Repository Server is an internal service that keeps A local copy of the 
 Git repository containing application manifests. It generates and returns Kubernetes manifests 
 based on the following inputs:
 
@@ -106,7 +106,7 @@ following commands since the previous commands have -n argocd already:
 P.S : This default installation will have A [[Self-Signed Certificate]] and cannot be accessed 
 without A bit of extra work. Do one of:
 
-A.Follow the instructions to configure A certificate (and ensure that the client OS trusts it).
+a.Follow the instructions to configure A certificate (and ensure that the client OS trusts it).
 https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/
 
 b.Configure the client OS to trust the self signed certificate.
@@ -114,6 +114,7 @@ b.Configure the client OS to trust the self signed certificate.
 c.Use the --insecure flag on all Argo CD CLI operations in this guide.
 
 d.Use argocd login --core to configure CLI access and skip steps 3-5.
+
 
 
 2. Download Argo CD CLI
@@ -126,6 +127,10 @@ brew install argocd
 
 . Use [[argocd login --core]] to Configure Cli Access and skip steps 3-5. 
 
+. get the admin initial password
+"kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
+
+"   {F1wHaSEjmPRAGpHL}
 
 [PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5]
 
@@ -655,6 +660,9 @@ like Cert-Manager or SealedSecrets.
 'kubectl create -n argocd secret tls argocd-server-tls \
   --cert=/path/to/cert.pem \
   --key=/path/to/key.pem'
+  
+'kubectl create secret tls argocd-server-tls-secret --cert=/Users/christophedjiguimkoudre/Downloads/tls.crt --key=/Users/christophedjiguimkoudre/Downloads/tls.key -n argocd'
+
 
 Automatic Updates:
 'Argo CD automatically picks up changes to the argocd-server-tls secret without needing to 
