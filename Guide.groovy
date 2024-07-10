@@ -128,9 +128,9 @@ brew install argocd
 . Use [[argocd login --core]] to Configure Cli Access and skip steps 3-5. 
 
 . get the admin initial password
-"kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
 
-"   {F1wHaSEjmPRAGpHL}
+[[ argocd admin initial-password -n argocd ]]
+ {F1wHaSEjmPRAGpHL}
 
 [PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5]
 
@@ -140,12 +140,13 @@ brew install argocd
 By default, the Argo CD API server is not exposed with an external IP. To access the API server, choose one of the following techniques to expose the Argo CD API server:
 
 a.'Service Type Load Balancer'
+-----------------------------
 
 Change the argocd-server service type to LoadBalancer:
 kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
 
-b.Ingress 
---------
+b.'Ingress'
+----------
 
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
@@ -231,10 +232,7 @@ on the ArgoCD-Server Deployment.Yaml
 Get your License by registering  with github and creating a token:
 
 export the token 
-export CLOUD_CONNECT_TOKEN=
-export CLOUD_CONNECT_TOKEN=
-export CLOUD_CONNECT_TOKEN=Y2FjNjkzNTUtMTg4Zi00YzlhLThjOTQtMTcxM2QyYWVjNTM2OmI2a2pBY29sWDcxa0EyTFdFSUNJQlYxVUlUR1FMQlZhdWpqaA==
-
+export CLOUD_CONNECT_TOKEN=ODcyMGM0YTEtNTAzMS00M2E1LWFjYjEtNjU3ODI4YTRjOWRjOkJFMDE2bGl1Umt0WjBYdUpmSHNKb1hNbzlBaURBZ1Myanl5TQ==
 2.Create Self- Signed Tls to be used for Ambassador (as in aes.yaml) &
  Supply Tls Secret to the (aes.yaml)
 
@@ -457,7 +455,8 @@ spec:
 'ssh -i chriskeypair.pem -L 80:localhost:30080 -L 443:localhost:30443 ubuntu@54.81.54.68'
 
 
-c.'Port Forwarding'.
+c.'Port Forwarding'
+------------------
 
 
 Kubectl port-forwarding can also be used to connect to the API server without exposing the service.
