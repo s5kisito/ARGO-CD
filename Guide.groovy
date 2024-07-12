@@ -130,7 +130,7 @@ brew install argocd
 . get the admin initial password
 
 [[ argocd admin initial-password -n argocd ]]
- {F1wHaSEjmPRAGpHL}
+ {3NGsd0zQQFBPxveS}
 
 [PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5]
 
@@ -232,26 +232,22 @@ on the ArgoCD-Server Deployment.Yaml
 Get your License by registering  with github and creating a token:
 
 export the token 
-export CLOUD_CONNECT_TOKEN=ODcyMGM0YTEtNTAzMS00M2E1LWFjYjEtNjU3ODI4YTRjOWRjOkJFMDE2bGl1Umt0WjBYdUpmSHNKb1hNbzlBaURBZ1Myanl5TQ==
+export CLOUD_CONNECT_TOKEN=Mjc5YjNjY2QtMWViOS00ODBhLTkyMjktMGE1YzUzMTBkNmZhOjU0OEI5T2Q2VXlpZlRMZzFDemxUdkRYdWFmTWFJdEo5azZ4Wg==
 2.Create Self- Signed Tls to be used for Ambassador (as in aes.yaml) &
  Supply Tls Secret to the (aes.yaml)
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt
 Output: Tls.Key; Tls.Crt
 
+(You will be prompt to enter country, state ,city organization, ocuupation, email, name)
+
+for Tls
 
 'cat tls.crt | base64
 '                       (to supply to Aes.Yaml)
 'cat tls.key | base64
 '
-
-
 echo "your_base64_encoded_string" | base64 --decode
-
-
-(You will be prompt to enter country, state ,city organization, ocuupation, email, name)
-
-for Tls.Yaml
 
 
 3. Run this commands:
@@ -987,3 +983,8 @@ Yes
 
 
 https://app.getambassador.io/cloud/home/dashboard
+
+
+kubectl get deployment argocd-server -n argocd -o yaml > argocd-server-latest.yaml
+
+http://192.168.49.240/argocd/

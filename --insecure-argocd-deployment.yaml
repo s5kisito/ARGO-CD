@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/name: argocd-server
     app.kubernetes.io/part-of: argocd
   name: argocd-server
-  namespace: argocd                                      unset 
+  namespace: argocd                                      
 
   resourceVersion: "798"
   uid: 2dfce309-b781-41f4-a4ac-81d6c07645bc

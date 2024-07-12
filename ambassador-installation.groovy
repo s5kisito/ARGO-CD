@@ -68,15 +68,12 @@ kubectl get -n ambassador service edge-stack -o "go-template={{range .status.loa
 kubectl create secret generic ambassador-edge-stack --from-literal=license-key=ZDgyOWY2ZWYtNjliMy00NjdkLWEyY2YtMzc1ODgxMTIyY2RhOlZ3Y0RoRlQyTGR0RmdtZ0hZa3hWT3A3Q1pqV3NNZHlGM1NZaQ==
 -n ambassador --dry-run=client -o yaml | kubectl apply -f -
 
+Access the quote Service via Ambassador:
 
+http://192.168.49.2/backend/
 
-kubectl create secret generic ambassador-edge-stack --from-literal=license-key=
-<your-license-key> -n ambassador --dry-run=client -o yaml | kubectl apply -f -
-
-
-
-
-
-kubectl annotate clusterrole edge-stack-agent meta.helm.sh/release-name=edge-stack --overwrite
-kubectl annotate clusterrole edge-stack-agent meta.helm.sh/release-namespace=ambassador --overwrite
-kubectl label clusterrole edge-stack-agent app.kubernetes.io/managed-by=Helm --overwrite
+Access Ambassador Diagnostics
+-----------------------------
+Port forward to the Ambassador admin service to access diagnostics:
+."kubectl port-forward svc/edge-stack-admin 8877:8877 -n ambassador "
+.'http://localhost:8877/ambassador/v0/diag/'
