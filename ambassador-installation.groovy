@@ -1,13 +1,138 @@
 
-Prerequisites: Disable the Tls on the ArgoCD-Server by adding: '--insecure'
+
+
+
+Prerequisites: 
+
+.Disable the Tls on the ArgoCD-Server by adding: '--insecure'
 on the ArgoCD-Server Deployment.Yaml
 
+.Requirements:
+ Some Clusters Need: (Ingress & Dns to be enabled )
+[[ 'minikube addons enable ingress' ; 'minikube addons enable ingress-dns']]
 
-1. https://app.getambassador.io/cloud/home/dashboard 
 
-Get your License by registering  with github and creating a token:
+Documentation Method Number 1
+-----------------------------
+
+1. Get License :
+
+a.Register to the following URL for a Token (license)
+
+https://app.getambassador.io/cloud/home/dashboard 
+
+b.Export the Token in your Terminal:
 
 export CLOUD_CONNECT_TOKEN=YjczYmI1MzAtMDdjMy00MTIzLWIyNWMtMjU4MGZiZTBiODgxOnVmODhUQmlYcGhUMEp4Z0phYXBYOWtUT1VEVTZFRWpRR2tFRQ==
+
+2. Install Ambassador Edge-Stack(AES) &  Edge Stack Custom Resource Definitions(AES-CRDs)
+
+kubectl apply -f https://app.getambassador.io/yaml/edge-stack/3.11.1/aes-crds.yaml && \
+kubectl wait --timeout=90s --for=condition=available deployment emissary-apiext -n emissary-system
+ 
+kubectl apply -f https://app.getambassador.io/yaml/edge-stack/3.11.1/aes.yaml && \
+kubectl create secret generic --namespace ambassador edge-stack-agent-cloud-token --from-literal=CLOUD_CONNECT_TOKEN=$CLOUD_CONNECT_TOKEN
+kubectl -n ambassador wait --for condition=available --timeout=90s deploy -l product=aes
+
+3. Listener for Ambassador Edge Stack.
+
+kubectl apply -f - <<EOF
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Listener
+metadata:
+  name: edge-stack-listener-8080
+  namespace: ambassador
+spec:
+  port: 8080
+  protocol: HTTP
+  securityModel: XFP
+  hostBinding:
+    namespace:
+      from: ALL
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Listener
+metadata:
+  name: edge-stack-listener-8443
+  namespace: ambassador
+spec:
+  port: 8443
+  protocol: HTTPS
+  securityModel: XFP
+  hostBinding:
+    namespace:
+      from: ALL
+EOF
+
+4. Mapping for Service . [[ ArgoCD,..........]]
+
+Example-1 (quote-service)
+
+kubectl apply -f - <<EOF
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: quote-backend
+spec:
+  hostname: "*"
+  prefix: /backend/
+  service: quote
+  docs:
+    path: "/.ambassador-internal/openapi-docs"
+EOF
+
+Key Notes:
+
+Mapping Name : "quote-backend"
+Hostname:      "*" (All or Every Host)
+Service:       "quote"(Name of the service)
+Path Matching: "/backend/" (all traffic inbound to the /backend/ path to the quote Service)
+OpenAPI Docs: /.ambassador-internal/openapi-docs
+
+Remark:
+-------
+
+Every Other Service must be mapped the Same way: Thus, We are going to map Argocd.
+
+Example-2: for ArgoCD Mapping
+
+
+
+
+5. Retrieve Hostname or IP
+
+export LB_ENDPOINT=$(kubectl -n ambassador get svc  edge-stack \
+  -o "go-template={{range .status.loadBalancer.ingress}}{{or .ip .hostname}}{{end}}")
+
+P.S: Some Clusters needs Extra work to Retrieve Hostname:
+e.g Minikube='minikube tunnel'
+
+6. Querry Service:
+
+curl -Lki https://$LB_ENDPOINT/backend/  
+
+[[$LB_ENDPOINT]]= LoadBalancer_Endpoint 
+
+curl -Lki https://127.0.0.1/backend/  
+
+
+ENV LB_ENDPOINT=127.0.0.1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 2.Create Self- Signed Tls to be used for Ambassador (as in aes.yaml) &
  Supply Tls Secret to the (aes.yaml)

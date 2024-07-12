@@ -145,8 +145,15 @@ a.'Service Type Load Balancer'
 Change the argocd-server service type to LoadBalancer:
 kubectl patch svc argocd-server -n argocd -p {"spec": {"type": "LoadBalancer"}}
 
-b.'Ingress'
+b.'Ingress' 
 ----------
+
+Requirements: Some Clusters Need: (Ingress & Dns to be enabled )
+
+ [[ minikube addons enable ingress
+minikube addons enable ingress-dns
+]]
+
 
 https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
 
