@@ -187,7 +187,7 @@ metadata:
   name: argocd-server-ui
   namespace: argocd
 spec:
-  host: 34.201.122.254
+  host: argocd.example.com
   prefix: /
   service: argocd-server:443
 ---

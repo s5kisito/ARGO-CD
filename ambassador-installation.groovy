@@ -1,12 +1,5 @@
 
 
-
-
-Prerequisites: 
-
-.Disable the Tls on the ArgoCD-Server by adding: '--insecure'
-on the ArgoCD-Server Deployment.Yaml
-
 .Requirements:
  Some Clusters Need: (Ingress & Dns to be enabled )
 [[ 'minikube addons enable ingress' ; 'minikube addons enable ingress-dns']]
@@ -97,6 +90,17 @@ Remark:
 Every Other Service must be mapped the Same way: Thus, We are going to map Argocd.
 
 Example-2: for ArgoCD Mapping
+-----------------------------
+-----------------------------
+
+Prerequisites: 
+
+.Disable the Tls on the ArgoCD-Server by adding: '--insecure'
+on the ArgoCD-Server Deployment.Yaml
+
+'kubectl get deployment argocd-server -n argocd -o yaml > argocd-server.yaml'
+
+
 
 
 
@@ -121,7 +125,7 @@ curl -Lki https://127.0.0.1/backend/
 ENV LB_ENDPOINT=127.0.0.1
 
 
-
+curl -Lki https://127.0.0.1/argo-cd
 
 
 
@@ -202,3 +206,6 @@ Access Ambassador Diagnostics
 Port forward to the Ambassador admin service to access diagnostics:
 ."kubectl port-forward svc/edge-stack-admin 8877:8877 -n ambassador "
 .'http://localhost:8877/ambassador/v0/diag/'
+
+
+G-CwdppvkFGtP7cR
