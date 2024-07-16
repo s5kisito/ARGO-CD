@@ -2,20 +2,31 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: argocd-server-ui
-  namespace: ambassador
+  namespace: argocd
 spec:
-  prefix: /argocd/
-  rewrite: /
-  service: argocd-server.argocd.svc.cluster.local:80
+  host: argocd.minikube.local
+  prefix: /
+  service: argocd-server:443
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: argocd-server-cli
-  namespace: ambassador
+  namespace: argocd
 spec:
-  prefix: /argocd/
-  service: argocd-server.argocd.svc.cluster.local:80
+  host: argocd.minikube.local:443
+  prefix: /
+  service: argocd-server:80
   regex_headers:
     Content-Type: "^application/grpc.*$"
   grpc: true
+
+-----------------------------------------------------------------------------
+
+For ArgoCD, you typically do not need to use a specific path prefix like /backend/. 
+Instead, you can use the root path / to match all paths, as ArgoCD services are usually 
+accessed directly via the root URL. Here are the typical URL paths used in ArgoCD:
+
+ArgoCD UI: Accessed at the root path /.
+ArgoCD API: Various API endpoints under /api/.
+ArgoCD gRPC server: Uses gRPC protocol typically accessed directly via the root path /.
