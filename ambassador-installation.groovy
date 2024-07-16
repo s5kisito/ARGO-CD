@@ -161,7 +161,10 @@ http://192.168.49.2/backend/
 
 ###############################################################################################
 
-How To Create Self- Signed Tls:
+Supplemental
+------------
+
+.How To Create Self- Signed Tls:
  
 'openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt'
 
@@ -184,12 +187,10 @@ for Tls.Yaml
 'kubectl create secret generic ambassador-edge-stack --from-literal=license-key=ZDgyOWY2ZWYtNjliMy00NjdkLWEyY2YtMzc1ODgxMTIyY2RhOlZ3Y0RoRlQyTGR0RmdtZ0hZa3hWT3A3Q1pqV3NNZHlGM1NZaQ==
 -n ambassador --dry-run=client -o yaml | kubectl apply -f -'
 
-
-Access Ambassador Diagnostics
+.Access Ambassador Diagnostics
 -----------------------------
 Port forward to the Ambassador admin service to access diagnostics:
 ."kubectl port-forward svc/edge-stack-admin 8877:8877 -n ambassador "
 .'http://localhost:8877/ambassador/v0/diag/'
-
 
 G-CwdppvkFGtP7cR
