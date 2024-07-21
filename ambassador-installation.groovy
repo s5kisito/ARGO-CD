@@ -128,8 +128,8 @@ spec:
 
 Remarks:
 - Apply Mapping
-- Add Host to '/etc/host' by 'sudo Vim /etc/host/'
-'127.0.0.1 argocd.minikube.local'
+- Add Host to '/etc/hosts' by 'sudo Vim '
+'127.0.0.1 argocd.minikube.local'/etc/hosts
 
 
 5. Retrieve Hostname or IP
@@ -154,7 +154,7 @@ curl -Lki https://127.0.0.1/backend/
 
 7. Check Ui in the Browser:
 
-https://argocd.minikube.local
+https://argocd.minikube.local (ArgoCD)
 
 Access the quote Service via Ambassador:
 http://192.168.49.2/backend/

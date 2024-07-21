@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  url: https://
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  accounts.edouard: apiKey, login
+  accounts.mohamine: apiKey, login
+  accounts.steven: apiKey, login
+  repositories: |
+    - url: https://github.com/s5kisito/Jenkins-Weatherapp
+      type: git

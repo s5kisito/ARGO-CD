@@ -1082,9 +1082,5 @@ $ argocd admin settings rbac can db-admins get applications 'staging-db-project/
 Yes
 
 
-https://app.getambassador.io/cloud/home/dashboard
 
 
-kubectl get deployment argocd-server -n argocd -o yaml > argocd-server-latest.yaml
-
-http://192.168.49.240/argocd/
