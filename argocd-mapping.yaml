@@ -23,10 +23,10 @@ spec:
 
 -----------------------------------------------------------------------------
 
-For ArgoCD, you typically do not need to use a specific path prefix like /backend/. 
-Instead, you can use the root path / to match all paths, as ArgoCD services are usually 
-accessed directly via the root URL. Here are the typical URL paths used in ArgoCD:
+# For ArgoCD, you typically do not need to use a specific path prefix like /backend/. 
+# Instead, you can use the root path / to match all paths, as ArgoCD services are usually 
+# accessed directly via the root URL. Here are the typical URL paths used in ArgoCD:
 
-ArgoCD UI: Accessed at the root path /.
-ArgoCD API: Various API endpoints under /api/.
-ArgoCD gRPC server: Uses gRPC protocol typically accessed directly via the root path /.
+# ArgoCD UI: Accessed at the root path /.
+# ArgoCD API: Various API endpoints under /api/.
+# ArgoCD gRPC server: Uses gRPC protocol typically accessed directly via the root path /.

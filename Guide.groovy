@@ -629,7 +629,7 @@ b.Creating Apps Via UI¶
 -After logging in, click the + New App button as shown below:
 + new app button
 
--Give your app the name guestbook, use the project default, and leave the sync policy as Manual
+-Give your app the name 'guestbook', use the project default, and leave the sync policy as Manual
 app information
 
 -Connect the https://github.com/argoproj/argocd-example-apps.git repo to Argo CD 

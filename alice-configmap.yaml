@@ -26,3 +26,5 @@ b- update password of user'alice'
 'argocd account update-password --account alice --new-password <alicePassword>'
 $ argocd account update-password --account alice --new-password alice@2024
 argocd login argocd.minikube.local --username alice --password alice@2024
+
+

@@ -58,7 +58,7 @@ spec:
       from: ALL
 EOF
 
-4. Mapping for Service . [[ ArgoCD,..........]]
+4. Mapping for Service . [[ Quote,ArgoCD, Jenkins , Etc..........]]
 
 Example-1 (quote-service)
 
@@ -97,7 +97,7 @@ Prerequisites:
 
 .Disable the Tls on the ArgoCD-Server by adding: '--insecure'
 on the ArgoCD-Server Deployment.Yaml
-'kubectl get deployment argocd-server -n argocd -o yaml > argocd-server.yaml'
+'kubectl get deployment argocd-server -n argocd -o yaml > argocd-server-latest.yaml'
 
 .Supply External Ip : 'minikube tunnel' some clusters are limited:
 
@@ -157,11 +157,12 @@ curl -Lki https://127.0.0.1/backend/
 https://argocd.minikube.local (ArgoCD)
 
 Access the quote Service via Ambassador:
-http://192.168.49.2/backend/
+http://192.168.49.2/backend/  (Quote)
 
 ###############################################################################################
 
 Supplemental
+------------
 ------------
 
 .How To Create Self- Signed Tls:
@@ -188,9 +189,9 @@ for Tls.Yaml
 -n ambassador --dry-run=client -o yaml | kubectl apply -f -'
 
 .Access Ambassador Diagnostics
------------------------------
+------------------------------
+
 Port forward to the Ambassador admin service to access diagnostics:
 ."kubectl port-forward svc/edge-stack-admin 8877:8877 -n ambassador "
 .'http://localhost:8877/ambassador/v0/diag/'
 
-G-CwdppvkFGtP7cR
