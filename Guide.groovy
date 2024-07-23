@@ -130,7 +130,7 @@ brew install argocd
 . get the admin initial password
 
 [[ argocd admin initial-password -n argocd ]]
- {3NGsd0zQQFBPxveS}
+ {cQO-Gjbtvbu7tobq}
 
 [PS:  IN CASE ArgoCD LOGIN --CORE NOT CONFIGURE WE WILL USE STEPS 3-5]
 
