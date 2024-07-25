@@ -272,7 +272,7 @@ These values will be inputted into the ArgoCD Configmap.
     data:
   url: https://argocd.example.com
 
-  dex.config: |
+  dex.config: |                                
     connectors:
       # GitHub example
       - type: github
@@ -281,8 +281,11 @@ These values will be inputted into the ArgoCD Configmap.
         config:
           clientID: aabbccddeeff00112233
           clientSecret: $dex.github.clientSecret # Alternatively $<some_K8S_secret>:dex.github.clientSecret
-          orgs:
+          orgs: 
           - name: your-github-org
+
+[[ 'This is for regular github account']]
+
 
       # GitHub enterprise example
       - type: github
@@ -295,23 +298,101 @@ These values will be inputted into the ArgoCD Configmap.
           orgs:
           - name: your-github-org
 
+[[ 'This is for Github Enterprise']]
+
+Note: 
+config:
+    # Credentials can be 'string literals or pulled from the environment.
+    clientID: $GITHUB_CLIENT_ID
+    clientSecret: $GITHUB_CLIENT_SECRET'
+
+          connectors:
+- type: github
+  # Required field for connector id.
+  id: github
+  # Required field for connector name.
+  name: GitHub
+  config:
+    # Required fields. Dex must be pre-registered with GitHub Enterprise
+    # to get the following values.
+    # Credentials can be string literals or pulled from the environment.
+    clientID: $GITHUB_CLIENT_ID
+    clientSecret: $GITHUB_CLIENT_SECRET
+    redirectURI: http://127.0.0.1:5556/dex/callback
+
+    # List of org and team names.
+    #  - If specified, a user MUST be a member of at least ONE of these orgs
+    #    and teams (if set) to authenticate with dex.
+    #  - Dex queries the following organizations for group information if the
+    #    "groups" scope is requested. Group claims are formatted as "(org):(team)".
+    #    For example if a user is part of the "engineering" team of the "coreos" org,
+    #    the group claim would include "coreos:engineering".
+    #  - If teams are specified, dex only returns group claims for those teams.
+    orgs:
+    - name: my-organization
+    - name: my-organization-with-teams
+      teams:
+      - red-team
+      - blue-team
+
 Lets Fix It To Suit Our case:
 -----------------------------
+
+1. By Looking Carefully , We Ought To Supply [[Dex-Server]]
+'CLIENT ID & CLIENT SECRET' as 'dex-secret'
+
+echo -n 'yourclientID' | base64             
+echo -n 'yourclientSecret' | base64
+
+
+
+Yaml For Dex-Secret: 'dex-secret.yaml'
+-------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dex-secret
+  namespace: argocd   #Replace <your-namespace> with the appropriate namespace
+type: Opaque
+data:
+  clientID: T3YyM2xpRENRNVJNemdZbmZDanI=
+  clientSecret: N2MwNTBkYTYwNzkyNTMxZWU1M2RiYzM3NzkxYWQ4M2MyMzQ3YWRlNA==
+
+After Applying 'dex-secret.yaml'
+
+2. Fix The ConfigMap Above By Referencing 'dex-secret'
+
+Configmap: 'argocd-cm.yaml'
+----------
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-cm
   namespace: argocd
 data:
-  url: https://localhost:8080
+  url: https://argocd.minikube.local
   dex.config: |
     connectors:
-      # GitHub example
-      - type: github
-        id: github
-        name: GitHub
-        config:
-          clientID: Ov23liFoU7jkqz8x7Ie8
-          clientSecret: $dex.github.clientSecret
-          orgs: 
-          - name: s5kisito
+    - type: github
+      id: github
+      name: GitHub
+      config:
+        clientID: $(dex-secret.clientID)
+        clientSecret: $(dex-secret.clientSecret)
+        orgs:
+        - name: DEVOPS-USA
+
+
+After Appling 'argocd-cm.yaml' Restart Completely 'argocd'By:
+
+3. Deleting All The Pods:
+kubectl delete pod -l app.kubernetes.io/name=argocd-server -n argocd
+kubectl delete pod -l app.kubernetes.io/name=argocd-application-controller -n argocd
+kubectl delete pod -l app.kubernetes.io/name=argocd-repo-server -n argocd
+kubectl delete pod -l app.kubernetes.io/name=argocd-dex-server -n argocd
+kubectl delete pod -l app.kubernetes.io/name=argocd-redis -n argocd
+kubectl delete pod -l app.kubernetes.io/name=argocd-notifications-controller -n argocd
+
+
+                                             
+

@@ -21,7 +21,7 @@ spec:
     Content-Type: "^application/grpc.*$"
   grpc: true
 
------------------------------------------------------------------------------
+
 
 # For ArgoCD, you typically do not need to use a specific path prefix like /backend/. 
 # Instead, you can use the root path / to match all paths, as ArgoCD services are usually 

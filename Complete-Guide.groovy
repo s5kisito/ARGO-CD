@@ -236,8 +236,8 @@ Prerequisites:
 [[ 'minikube addons enable ingress' ; 'minikube addons enable ingress-dns']]
 
 
-Documentation Method Number 1
------------------------------
+Documentation Method For Ambassador mapping
+-------------------------------------------
 
 1. Get License :
 
