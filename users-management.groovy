@@ -72,7 +72,7 @@ Note: Add it in the 'argocd.yaml' and Apply.
 
 Importants Notes for Local Users:
 ---------------------------------
-When you create local users, each of those users will need additional RBAC rules set up, 
+When you create local users, each of those users will need additional 'RBAC rules set up', 
 otherwise they will fall back to the default policy specified by policy.default field of the 
 argocd-rbac-cm ConfigMap.
 
@@ -80,8 +80,9 @@ argocd-rbac-cm ConfigMap.
 - - - - - - - - - - - 
 
 RBAC in Argo CD allows you to restrict access to resources by setting up roles and assigning 
-these roles to users or groups. To enable RBAC, 
-you need to configure 'SSO' or create 'local users', 
+these roles to users or groups. 
+
+To 'enable RBAC', you need to 'configure SSO' or create 'local users', 
 'as Argo CD itself does not manage users beyond the built-in admin account.'
 
 Summary of RBAC in Argo CD
@@ -200,9 +201,9 @@ that allow users with that role to perform the following action
 
 
 
-IIThe Single Sign On [['SSO' ]]
-------------------------------- 
--------------------------------
+IIi. The Single Sign On [['SSO' ]]
+----------------------------------
+----------------------------------
 
 Single Sign-On (SSO) allows users to 'log in to multiple applications with one set of 
 login credentials'.
@@ -243,7 +244,7 @@ It involves redirecting users to GitHub to log in, obtaining an authorization co
 
 In GitHub, register a new application. 
 The callback address should be the /api/dex/callback endpoint of your Argo CD URL 
-(e.g. https://argocd.example.com/api/dex/callbacK
+e.g. https://argocd.example.com/api/dex/callbacK
 
 - go to your account (click on your name[if personal account], or organization [if company])
 - Settings:
@@ -254,7 +255,7 @@ The callback address should be the /api/dex/callback endpoint of your Argo CD UR
 - Homepage 'URL': give 'ArgoCd URL'
 -Description(optional)
 - Authorization Callback 'URL': 'ARGOCD-URL/api/dex/callbacK'
-The callback address should be the /api/dex/callback endpoint of your Argo CD URL 
+The callback address should be the '/api/dex/callback' endpoint of your Argo CD URL 
 E.G: https://argocd.example.com/api/dex/callbacK)
 
 - 'Register Application'
@@ -339,36 +340,30 @@ Lets Fix It To Suit Our case:
 -----------------------------
 
 1. By Looking Carefully , We Ought To Supply [[Dex-Server]]
-'CLIENT ID & CLIENT SECRET' as 'dex-secret'
-
-echo -n 'yourclientID' | base64             
+'CLIENT ID & CLIENT SECRET' as 'dex-github-secret'
+      
 echo -n 'yourclientSecret' | base64
 
 
+Yaml For 'dex-github-secret': 'dex-github-secret.yaml'
 
-Yaml For Dex-Secret: 'dex-secret.yaml'
--------------------
 apiVersion: v1
 kind: Secret
 metadata:
-  name: dex-secret
+  name: dex-github-secret
   namespace: argocd   #Replace <your-namespace> with the appropriate namespace
 type: Opaque
 data:
-  clientID: T3YyM2xpRENRNVJNemdZbmZDanI=
+  clientID: Ov23liDCQ5RMzgYnfCjr
   clientSecret: N2MwNTBkYTYwNzkyNTMxZWU1M2RiYzM3NzkxYWQ4M2MyMzQ3YWRlNA==
 
-After Applying 'dex-secret.yaml'
+After Applying 'dex-github-secret'
 
-2. Fix The ConfigMap Above By Referencing 'dex-secret'
+2. Fix The ConfigMap Above By Referencing 'dex-github-secret'
 
-Configmap: 'argocd-cm.yaml'
+Configmap: 
 ----------
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-cm
-  namespace: argocd
+
 data:
   url: https://argocd.minikube.local
   dex.config: |
@@ -377,22 +372,22 @@ data:
       id: github
       name: GitHub
       config:
-        clientID: $(dex-secret.clientID)
-        clientSecret: $(dex-secret.clientSecret)
+        clientID: Ov23liDCQ5RMzgYnfCjr # 'it could also be in base 64'
+        clientSecret: $dex-github-secret:clientSecret
         orgs:
         - name: DEVOPS-USA
 
+3. Edit 'argocd configmap' :
 
-After Appling 'argocd-cm.yaml' Restart Completely 'argocd'By:
+'kubectl edit configmap argocd-cm -n argocd'
 
-3. Deleting All The Pods:
-kubectl delete pod -l app.kubernetes.io/name=argocd-server -n argocd
-kubectl delete pod -l app.kubernetes.io/name=argocd-application-controller -n argocd
-kubectl delete pod -l app.kubernetes.io/name=argocd-repo-server -n argocd
-kubectl delete pod -l app.kubernetes.io/name=argocd-dex-server -n argocd
-kubectl delete pod -l app.kubernetes.io/name=argocd-redis -n argocd
-kubectl delete pod -l app.kubernetes.io/name=argocd-notifications-controller -n argocd
+Remarks: 'PLEASE BE PATIENT AND DO IT AS IT IS. FOLLOW THE DOCUMENTATION: DISREGARD
+CHATGPT INSTRUCTIONS BECAUSE YOU WILL LOSE YR CONFIGMAP BUILT IN FILE'
+
 
 
                                              
 
+IIIi: OIDC Configuration with DEX
+---------------------------------
+---------------------------------
