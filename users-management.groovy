@@ -193,7 +193,7 @@ data:
     p, role:staging-db-admin, exec, create, staging-db-project/*, allow
     p, role:staging-db-admin, projects, get, staging-db-project, allow
   policy.default: role:readonly
-  groups.db-admins: role:staging-db-admin'
+  groups.DEV: role:staging-db-admin'
 
 
 Note: This example defines a role called staging-db-admin with nine permissions 
@@ -342,8 +342,8 @@ Lets Fix It To Suit Our case:
 1. By Looking Carefully , We Ought To Supply [[Dex-Server]]
 'CLIENT ID & CLIENT SECRET' as 'dex-github-secret'
       
-echo -n 'yourclientSecret' | base64
-
+echo -n 'yourclientSecret' | base64   echo -n  | base64
+echo -n 'yourclientID' | base64       echo -n  | base64
 
 Yaml For 'dex-github-secret': 'dex-github-secret.yaml'
 
@@ -354,8 +354,8 @@ metadata:
   namespace: argocd   #Replace <your-namespace> with the appropriate namespace
 type: Opaque
 data:
-  clientID: Ov23liDCQ5RMzgYnfCjr
-  clientSecret: N2MwNTBkYTYwNzkyNTMxZWU1M2RiYzM3NzkxYWQ4M2MyMzQ3YWRlNA==
+  clientID: T3YyM2xpdFprT3FZRlZQWUNkb2M=
+  clientSecret: OWM2MDU0MWRlYmI2ZDQ0NDY2Y2JlYzgwZWVlMjYwZWQ3MzJlOTg5Yg==
 
 After Applying 'dex-github-secret'
 
@@ -363,6 +363,8 @@ After Applying 'dex-github-secret'
 
 Configmap: 
 ----------
+$dex-github-secret:clientID
+$dex-github-secret:clientSecret
 
 data:
   url: https://argocd.minikube.local
@@ -372,10 +374,10 @@ data:
       id: github
       name: GitHub
       config:
-        clientID: Ov23liDCQ5RMzgYnfCjr # 'it could also be in base 64'
-        clientSecret: $dex-github-secret:clientSecret
+        clientID: Ov23liAuHas2Ppn2rGSl
+        clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd
         orgs:
-        - name: DEVOPS-USA
+        - name: DEVOPS-NEW-YORK-PHIL-GEORGIE
 
 3. Edit 'argocd configmap' :
 
@@ -388,6 +390,71 @@ CHATGPT INSTRUCTIONS BECAUSE YOU WILL LOSE YR CONFIGMAP BUILT IN FILE'
 
                                              
 
-IIIi: OIDC Configuration with DEX
+IIIi: OIDC Configuration with DEX [['OPEN ID CONNECT']]
 ---------------------------------
 ---------------------------------
+
+https://dexidp.io/docs/openid-connect/ (FOR BETTER COMPREHENSION)
+
+.Provides a standardized way for users to log in using OpenID Connect, 
+which builds on top of OAuth2.
+.Offers more features like 'fetching additional user info and federated tokens'
+.Utilizes Dex as an intermediary to handle the 'OIDC flow'
+
+. Because We Are Using Github, It Worth Noting:
+'That Dex is configured to use GitHub as an OIDC provider' ; Therefore, Our 
+'OIDC Provider = Github'
+'issuer: https://github.com'
+
+Configuration: 'BE CAREFUL HERE'
+-------------------------------
+
+-Please note that We have already created an App  for 'ARGOCD SSO'(OAuth2 Github), 
+- The App has ('Argocd-url, Authorization callback') , Unless It Is A different ArgoCd 
+with Another Url , We Will Not Create Another App. 
+
+'clientID & ClientSecret' Remains the Same 
+
+
+
+- Structure Your Configmap & Edit The 'argocd-cm' File for Implementation
+
+data:
+  url: "https://argocd.example.com"
+  dex.config: |
+    connectors:
+      # OIDC
+      - type: oidc
+        id: oidc
+        name: OIDC
+        config:
+          issuer: https://example-OIDC-provider.example.com
+          clientID: aaaabbbbccccddddeee
+          clientSecret: $dex.oidc.clientSecret
+
+ Fixing To Suit Our Needs:
+
+Error Made :https://argocd.example.com/api/dex/callbacKcallbacK (Url Authorization callback)
+            https://argocd.example.com/api/dex/callback 
+data:
+  url: https://https://argocd.minikube.local
+  dex.config: |
+    connectors:
+      # OIDC
+      - type: oidc
+        id: oidc
+        name: OIDC
+        config:
+          issuer: https://github.com
+          clientID: Ov23liAuHas2Ppn2rGSl
+          clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd  
+
+'kubectl edit configmap argocd-cm -n argocd'
+
+Troubleshootings:
+
+kubectl exec -it <some-pod-name> -n argocd -- curl http://argocd-dex-server:5556/.well-known/openid-configuration
+
+kubectl exec -it argocd-dex-server-66779d96df-rlxhr   -n argocd -- curl http://argocd-dex-server:5556/.well-known/openid-configuration
+
+

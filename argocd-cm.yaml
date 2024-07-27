@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd # replace with your namespace if different
+data:
+  url: https://argocd.minikube.local
+  dex.config: |
+    connectors:
+    - type: github
+      id: github
+      name: GitHub
+      config:
+        clientID: Ov23liAuHas2Ppn2rGSl
+        clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd
+        orgs:
+        - name: DEVOPS-NEW-YORK-PHIL-GEORGIE
