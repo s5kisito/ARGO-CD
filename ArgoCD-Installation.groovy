@@ -25,6 +25,12 @@ following commands since the previous commands have -n argocd already:
 P.S : This default installation will have A [[Self-Signed Certificate]] and cannot be accessed 
 without A bit of extra work. Do one of:
 
+
+'H.A: HIGH AVAILABILITY MODE' = manifests/ha
+
+ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/ha/install.yaml'
+
+
 a.Follow the instructions to configure A certificate (and ensure that the client OS trusts it).
 https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/
 

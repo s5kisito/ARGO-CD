@@ -824,7 +824,7 @@ it will be rebuilt without loss of service.
 A set of HA manifests are provided for users who wish to run Argo CD in A highly available manner.
  This runs more containers, and runs Redis in HA mode.
 
-NOTE: The HA installation will require at least Three(3) Different Nodes due to Pod Anti-Affinity roles in 
+NOTE: The HA installation will require at least Three(3) Different Nodes due to Pod Anti-Affinity Roles in 
 the specs. Additionally, IPv6 only clusters are not supported.
 
 argocd-repo-server is like A librarian for your application blueprints (stored in Git repositories). 

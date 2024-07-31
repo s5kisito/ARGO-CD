@@ -11,7 +11,7 @@ data:
       id: github
       name: GitHub
       config:
-        clientID: Ov23liAuHas2Ppn2rGSl
-        clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd
+        clientID: $dex-github-secret:clientID
+        clientSecret: $dex-github-secret:clientSecret
         orgs:
         - name: DEVOPS-NEW-YORK-PHIL-GEORGIE

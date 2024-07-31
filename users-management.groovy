@@ -342,8 +342,13 @@ Lets Fix It To Suit Our case:
 1. By Looking Carefully , We Ought To Supply [[Dex-Server]]
 'CLIENT ID & CLIENT SECRET' as 'dex-github-secret'
       
-echo -n 'yourclientSecret' | base64   echo -n  | base64
-echo -n 'yourclientID' | base64       echo -n  | base64
+echo -n 'yourclientID' | base64       
+echo -n 'yourclientSecret' | base64   
+
+echo -n Ov23liAuHas2Ppn2rGSl | base64       
+echo -n 9ca392e114f3c098704d4feaf6b769f2fdbaeafd | base64   
+
+
 
 Yaml For 'dex-github-secret': 'dex-github-secret.yaml'
 
@@ -354,8 +359,8 @@ metadata:
   namespace: argocd   #Replace <your-namespace> with the appropriate namespace
 type: Opaque
 data:
-  clientID: T3YyM2xpdFprT3FZRlZQWUNkb2M=
-  clientSecret: OWM2MDU0MWRlYmI2ZDQ0NDY2Y2JlYzgwZWVlMjYwZWQ3MzJlOTg5Yg==
+  clientID: T3YyM2xpQXVIYXMyUHBuMnJHU2w=
+  clientSecret: OWNhMzkyZTExNGYzYzA5ODcwNGQ0ZmVhZjZiNzY5ZjJmZGJhZWFmZA==
 
 After Applying 'dex-github-secret'
 
@@ -363,8 +368,11 @@ After Applying 'dex-github-secret'
 
 Configmap: 
 ----------
-$dex-github-secret:clientID
-$dex-github-secret:clientSecret
+'Because we have already created a secret called dex-github-secret, we will define it in the
+configmap as follow:
+'
+$dex-github-secret:clientID=clientID
+$dex-github-secret:clientSecret=clientSecret
 
 data:
   url: https://argocd.minikube.local
@@ -374,8 +382,8 @@ data:
       id: github
       name: GitHub
       config:
-        clientID: Ov23liAuHas2Ppn2rGSl
-        clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd
+        clientID: $dex-github-secret:clientID
+        clientSecret: $dex-github-secret:clientSecret
         orgs:
         - name: DEVOPS-NEW-YORK-PHIL-GEORGIE
 
@@ -446,8 +454,8 @@ data:
         name: OIDC
         config:
           issuer: https://github.com
-          clientID: Ov23liAuHas2Ppn2rGSl
-          clientSecret: 9ca392e114f3c098704d4feaf6b769f2fdbaeafd  
+          clientID: $dex-github-secret:clientID
+          clientSecret: $dex-github-secret:clientSecret
 
 'kubectl edit configmap argocd-cm -n argocd'
 
